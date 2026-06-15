@@ -4,13 +4,6 @@ export interface StyleMap {
   }
 }
 
-export interface NovaStyleConfig {
-  containerId: string
-  mountPointId: string
-  selector: string
-  domain: string
-}
-
 export type ExtensionToggleMessage = {
   type: 'TOGGLE_EXTENSION'
   state: 'active' | 'inactive'
@@ -34,9 +27,3 @@ export type UpdateClassesMessage = {
 
 export type BackgroundMessage = GetStylesMessage | SaveStylesMessage
 export type ContentMessage = ExtensionToggleMessage | UpdateClassesMessage
-
-declare global {
-  interface Window {
-    __NOVASTYLE_CONFIG__?: NovaStyleConfig
-  }
-}

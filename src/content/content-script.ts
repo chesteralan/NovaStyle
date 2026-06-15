@@ -1,8 +1,12 @@
 import { createHighlighter, drawHighlighter, hideHighlighter, destroyHighlighter, type HighlighterState } from './highlighter'
 import { computeSelector, extractStyles } from './selector'
 import { updateStylesheet, clearStylesheet } from './injector'
-import { saveStyles } from '@/storage/db'
 import type { ContentMessage } from '@/types'
+
+async function saveStyles(domain: string, styles: Record<string, Record<string, string>>): Promise<void> {
+  const key = 'novastyle_' + domain
+  try { await chrome.storage.local.set({ [key]: { styles, updatedAt: Date.now() } }) } catch { /* noop */ }
+}
 
 let highlighter: HighlighterState | null = null
 let active = false
@@ -74,8 +78,7 @@ function openPanel(selector: string, styles: Record<string, Record<string, strin
   const domain = window.location.hostname.replace(/^www\./, '')
 
   const mainScript = document.createElement('script')
-  const params = new URLSearchParams({ selector, domain })
-  mainScript.src = chrome.runtime.getURL(`assets/panel.js?${params}`)
+  mainScript.src = chrome.runtime.getURL('assets/panel.js')
   mainScript.onerror = () => {
     console.error('NovaStyle: Failed to load panel script')
     closePanel()
