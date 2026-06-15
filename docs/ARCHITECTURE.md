@@ -92,7 +92,7 @@ click → e.preventDefault()
 **Event Flow (Style Change)**:
 ```
 panel: slider change
-    → useStyles.updateStyle(selector, property, value)
+    → useStyleStore.getState().updateStyle(selector, property, value)
     → injector.update(stylesMap)
     → storage.debouncedSave(domain, stylesMap)
 ```
@@ -264,7 +264,7 @@ User clicks element
     → styles = getComputedStyle(el)          [~1-2ms]
     → panel.open(selector, styles)
 User adjusts slider
-    → useStyles.updateStyle(selector, prop, value)  [~0.01ms]
+    → useStyleStore.getState().updateStyle(selector, prop, value)  [~0.01ms]
     → injector.update(stylesMap)                     [debounced ~50ms]
         → rebuild CSS string
         → replace <style> textContent

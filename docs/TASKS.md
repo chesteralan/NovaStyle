@@ -96,7 +96,7 @@ novastyle/
 │   │   │   ├── Typography.tsx      # Font-size, line-height, etc.
 │   │   │   └── ColorPicker.tsx     # Text color & background pickers
 │   │   ├── hooks/
-│   │   │   └── useStyles.ts        # StyleMap state + undo/redo stack
+│   │   │   └── useStyles.ts        # Zustand store (StyleMap state + undo/redo)
 │   │   └── styles/
 │   │       └── panel.css           # Tailwind v4 @theme + custom vars
 │   ├── storage/
@@ -298,25 +298,10 @@ function updateStylesheet(styles: StyleMap): void
 
 - [x]
 
-- Manage a `StyleMap` instance (selectors → properties → values)
-- Design with undo/redo support from day one (snapshot-based change stack):
-
-```typescript
-interface UseStylesReturn {
-  styles: StyleMap
-  updateStyle: (selector: string, property: string, value: string) => void
-  removeStyle: (selector: string, property: string) => void
-  resetSelector: (selector: string) => void
-  resetAll: () => void
-  canUndo: boolean
-  canRedo: boolean
-  undo: () => void
-  redo: () => void
-}
-```
-
-- Push a snapshot onto the undo stack on each change (limit to 50 entries)
-- On change: trigger injector rebuild (via callback) and debounced storage save
+- Create a Zustand store (`useStyleStore`) managing a `StyleMap` instance with undo/redo
+- Snapshot-based undo stack limited to 50 entries
+- Expose: `styles`, `updateStyle`, `removeStyle`, `resetAll`, `undo`, `redo`, `setStyles`
+- Subscribers (injector, storage) listen directly via `useStyleStore.subscribe()`
 
 ### Task 15: Create React panel UI with Shadow DOM isolation (`src/panel/`)
 
@@ -435,7 +420,7 @@ test: {
 ```
 
 Testing strategy:
-- **Unit tests** (Vitest): `selector.ts`, `exporter.ts`, `storage/db.ts`, `useStyles.ts`
+- **Unit tests** (Vitest): `selector.ts`, `exporter.ts`, `storage/db.ts`, store logic
 - **Component tests** (React Testing Library): `BoxModel.tsx`, `Typography.tsx`, `ColorPicker.tsx`
 - **No E2E for initial setup** — added in a follow-up task
 

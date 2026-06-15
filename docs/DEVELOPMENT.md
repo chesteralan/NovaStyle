@@ -52,7 +52,7 @@ novastyle/
 │   │   │   ├── Typography.tsx  # Font-size, line-height, etc.
 │   │   │   └── ColorPicker.tsx # Color & background pickers
 │   │   ├── hooks/
-│   │   │   └── useStyles.ts    # Style state management hook
+│   │   │   └── useStyles.ts    # Zustand store (StyleMap + undo/redo)
 │   │   └── styles/
 │   │       └── panel.css       # Tailwind v4 + custom panel styles
 │   ├── storage/
@@ -200,7 +200,7 @@ import { computeSelector } from '@/content/selector'
 import { StyleMap } from '@/types'
 
 // Relative imports only for same-directory files
-import { useStyles } from './hooks/useStyles'
+import { useStyleStore } from './hooks/useStyles'
 ```
 
 ### CSS Naming
@@ -211,9 +211,9 @@ import { useStyles } from './hooks/useStyles'
 
 ### State Management
 
-- All style state lives in the `useStyles` custom hook
-- No external state library (Redux, Zustand) — the hook manages a single `StyleMap` object
-- The hook exposes: `styles`, `updateStyle`, `removeStyle`, `resetAll`, `canUndo`, `canRedo`, `undo`, `redo`
+- Style state lives in a Zustand store (`useStyleStore` in `src/panel/hooks/useStyles.ts`)
+- Subscribe to changes from outside React via `useStyleStore.subscribe()`
+- The store exposes: `styles`, `updateStyle`, `removeStyle`, `resetAll`, `undo`, `redo`, `setStyles`
 
 ---
 

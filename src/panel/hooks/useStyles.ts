@@ -1,98 +1,89 @@
-import { useState, useCallback } from 'react'
+import { create } from 'zustand'
 import type { StyleMap } from '@/types'
 
 const MAX_UNDO = 50
 
-export function useStyles(onChange?: (styles: StyleMap) => void) {
-  const [styles, setStyles] = useState<StyleMap>({})
-  const [undoStack, setUndoStack] = useState<StyleMap[]>([])
-  const [redoStack, setRedoStack] = useState<StyleMap[]>([])
-
-  const pushSnapshot = useCallback((prev: StyleMap) => {
-    setUndoStack((stack) => {
-      const next = [...stack, structuredClone(prev)]
-      return next.length > MAX_UNDO ? next.slice(-MAX_UNDO) : next
-    })
-    setRedoStack([])
-  }, [])
-
-  const updateStyle = useCallback(
-    (selector: string, property: string, value: string) => {
-      setStyles((prev) => {
-        pushSnapshot(prev)
-        const next = { ...prev }
-        if (!next[selector]) next[selector] = {}
-        next[selector] = { ...next[selector], [property]: value }
-        onChange?.(next)
-        return next
-      })
-    },
-    [onChange, pushSnapshot],
-  )
-
-  const removeStyle = useCallback(
-    (selector: string, property: string) => {
-      setStyles((prev) => {
-        if (!prev[selector]) return prev
-        pushSnapshot(prev)
-        const next = { ...prev }
-        const props = { ...next[selector] }
-        delete props[property]
-        if (Object.keys(props).length === 0) {
-          delete next[selector]
-        } else {
-          next[selector] = props
-        }
-        onChange?.(next)
-        return next
-      })
-    },
-    [onChange, pushSnapshot],
-  )
-
-  const resetAll = useCallback(() => {
-    setStyles((prev) => {
-      if (Object.keys(prev).length === 0) return prev
-      pushSnapshot(prev)
-      onChange?.({})
-      return {}
-    })
-  }, [onChange, pushSnapshot])
-
-  const canUndo = undoStack.length > 0
-  const canRedo = redoStack.length > 0
-
-  const undo = useCallback(() => {
-    setStyles((prev) => {
-      if (undoStack.length === 0) return prev
-      const snapshot = undoStack[undoStack.length - 1]
-      setUndoStack((s) => s.slice(0, -1))
-      setRedoStack((s) => [...s, structuredClone(prev)])
-      onChange?.(snapshot)
-      return snapshot
-    })
-  }, [undoStack, onChange])
-
-  const redo = useCallback(() => {
-    setStyles((prev) => {
-      if (redoStack.length === 0) return prev
-      const snapshot = redoStack[redoStack.length - 1]
-      setRedoStack((s) => s.slice(0, -1))
-      setUndoStack((s) => [...s, structuredClone(prev)])
-      onChange?.(snapshot)
-      return snapshot
-    })
-  }, [redoStack, onChange])
-
-  return {
-    styles,
-    updateStyle,
-    removeStyle,
-    resetAll,
-    canUndo,
-    canRedo,
-    undo,
-    redo,
-    setStyles,
-  }
+interface StyleStore {
+  styles: StyleMap
+  undoStack: StyleMap[]
+  redoStack: StyleMap[]
+  updateStyle: (selector: string, property: string, value: string) => void
+  removeStyle: (selector: string, property: string) => void
+  resetAll: () => void
+  undo: () => void
+  redo: () => void
+  setStyles: (styles: StyleMap) => void
 }
+
+export const useStyleStore = create<StyleStore>((set, get) => ({
+  styles: {},
+  undoStack: [],
+  redoStack: [],
+
+  updateStyle: (selector, property, value) => {
+    const { styles, undoStack } = get()
+    const snapshot = structuredClone(styles)
+    const next = { ...styles }
+    if (!next[selector]) next[selector] = {}
+    next[selector] = { ...next[selector], [property]: value }
+    set({
+      styles: next,
+      undoStack: [...undoStack, snapshot].slice(-MAX_UNDO),
+      redoStack: [],
+    })
+  },
+
+  removeStyle: (selector, property) => {
+    const { styles, undoStack } = get()
+    if (!styles[selector]) return
+    const snapshot = structuredClone(styles)
+    const next = { ...styles }
+    const props = { ...next[selector] }
+    delete props[property]
+    if (Object.keys(props).length === 0) {
+      delete next[selector]
+    } else {
+      next[selector] = props
+    }
+    set({
+      styles: next,
+      undoStack: [...undoStack, snapshot].slice(-MAX_UNDO),
+      redoStack: [],
+    })
+  },
+
+  resetAll: () => {
+    const { styles, undoStack } = get()
+    if (Object.keys(styles).length === 0) return
+    const snapshot = structuredClone(styles)
+    set({
+      styles: {},
+      undoStack: [...undoStack, snapshot].slice(-MAX_UNDO),
+      redoStack: [],
+    })
+  },
+
+  undo: () => {
+    const { styles, undoStack, redoStack } = get()
+    if (undoStack.length === 0) return
+    const previous = undoStack[undoStack.length - 1]
+    set({
+      styles: previous,
+      undoStack: undoStack.slice(0, -1),
+      redoStack: [...redoStack, structuredClone(styles)],
+    })
+  },
+
+  redo: () => {
+    const { styles, undoStack, redoStack } = get()
+    if (redoStack.length === 0) return
+    const next = redoStack[redoStack.length - 1]
+    set({
+      styles: next,
+      undoStack: [...undoStack, structuredClone(styles)],
+      redoStack: redoStack.slice(0, -1),
+    })
+  },
+
+  setStyles: (styles) => set({ styles }),
+}))
