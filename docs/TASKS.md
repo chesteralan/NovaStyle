@@ -8,6 +8,8 @@
 
 ### Task 1: Scaffold Vite + React + TypeScript project
 
+- [x] 
+
 ```bash
 npm create vite@latest novastyle -- --template react-ts
 cd novastyle
@@ -17,6 +19,8 @@ npm install
 Commit the scaffolded project before making further changes.
 
 ### Task 2: Install Tailwind CSS v4 and configure Vite plugin
+
+- [x]
 
 ```bash
 npm install tailwindcss @tailwindcss/vite
@@ -38,6 +42,8 @@ export default defineConfig({
 
 ### Task 3: Set up CSS entry point with Tailwind v4
 
+- [x]
+
 Replace `src/index.css` with:
 
 ```css
@@ -45,6 +51,8 @@ Replace `src/index.css` with:
 ```
 
 ### Task 4: Set up TypeScript path aliases
+
+- [x]
 
 Configure `@` alias pointing to `src/` in both `tsconfig.json` and `vite.config.ts`:
 
@@ -65,6 +73,8 @@ resolve: {
 ```
 
 ### Task 5: Create the project directory structure
+
+- [x]
 
 ```
 novastyle/
@@ -105,6 +115,8 @@ novastyle/
 
 ### Task 6: Create `src/types/index.ts` — shared types
 
+- [x]
+
 ```typescript
 export interface StyleMap {
   [selector: string]: {
@@ -129,6 +141,8 @@ export type ExtensionState = 'active' | 'inactive'
 ```
 
 ### Task 7: Create `public/manifest.json`
+
+- [x]
 
 ```json
 {
@@ -158,6 +172,8 @@ export type ExtensionState = 'active' | 'inactive'
 ```
 
 ### Task 8: Configure Vite for Chrome Extension multi-entry build
+
+- [x]
 
 Use a manual Rollup configuration (no third-party extension plugin — see ADR-006):
 
@@ -200,6 +216,8 @@ Build output targets:
 
 ### Task 9: Implement background service worker (`src/background/service-worker.ts`)
 
+- [x]
+
 - Listen for `chrome.action.onClicked` to toggle extension active state
 - Inject content script via `chrome.scripting.executeScript()` if not already present
 - Maintain `tabId → ExtensionState` map in memory for badge/toggle
@@ -209,6 +227,8 @@ Build output targets:
   - `SAVE_STYLES` → write to `chrome.storage.local`
 
 ### Task 10: Implement selector engine (`src/content/selector.ts`)
+
+- [x]
 
 Multi-strategy selector computation per ADR-004:
 
@@ -225,6 +245,8 @@ function computeSelector(el: Element): string
 ```
 
 ### Task 11: Implement highlighter overlay (`src/content/highlighter.ts`)
+
+- [x]
 
 - Create a single `div` overlay appended to `document.body`
 - `position: fixed`, `pointer-events: none`, `z-index: 2147483646`
@@ -243,6 +265,8 @@ interface HighlighterState {
 
 ### Task 12: Implement content script orchestrator (`src/content/content-script.ts`)
 
+- [x]
+
 - Inject Shadow DOM container: `<div id="novastyle-root">` with open shadow root
 - On activation: attach `mouseover` / `mouseout` / `click` event listeners
 - On `click`: `e.preventDefault()`, `e.stopPropagation()`, freeze highlighter
@@ -253,6 +277,8 @@ interface HighlighterState {
 - Coordinate injector, storage, and event flow
 
 ### Task 13: Implement stylesheet injector (`src/content/injector.ts`)
+
+- [x]
 
 - Manage `<style id="novastyle-live-sheet">` in document `<head>`
 - Accept `StyleMap` and regenerate CSS text:
@@ -269,6 +295,8 @@ function updateStylesheet(styles: StyleMap): void
 ```
 
 ### Task 14: Implement style state management (`src/panel/hooks/useStyles.ts`)
+
+- [x]
 
 - Manage a `StyleMap` instance (selectors → properties → values)
 - Design with undo/redo support from day one (snapshot-based change stack):
@@ -292,6 +320,8 @@ interface UseStylesReturn {
 
 ### Task 15: Create React panel UI with Shadow DOM isolation (`src/panel/`)
 
+- [x]
+
 - Mount React app into Shadow DOM root (`createRoot(shadowRoot)`)
 - Inject pre-compiled Tailwind v4 CSS into Shadow DOM `<style>` (see ADR-001, ADR-008)
 - Implement tabbed `Panel.tsx`:
@@ -312,6 +342,8 @@ root.render(<App />)
 
 ### Task 16: Implement panel editor components (`src/panel/components/`)
 
+- [x]
+
 #### BoxModel (`BoxModel.tsx`)
 - Visual nested layout: Margin → Border → Padding → Content (center label)
 - Numeric inputs per side (top/right/bottom/left) for each layer
@@ -330,6 +362,8 @@ root.render(<App />)
 
 ### Task 17: Implement storage layer (`src/storage/db.ts`)
 
+- [x]
+
 Async wrapper around `chrome.storage.local`:
 
 ```typescript
@@ -343,6 +377,8 @@ async function getAllDomains(): Promise<string[]>
 - Call `saveStyles` via debounced relay from content script → service worker
 
 ### Task 18: Implement CSS exporter (`src/exporter/exporter.ts`)
+
+- [x]
 
 ```typescript
 function exportToCSS(styles: StyleMap, domain?: string): string
@@ -362,11 +398,17 @@ div.hero > h1 {
 
 ### Task 19: Create `src/panel/components/ExportPanel.tsx`
 
+- [x]
+
 - Display formatted CSS in a `<pre><code>` block with monospace styling
 - "Copy to Clipboard" button using `navigator.clipboard.writeText()`
 - Visual feedback: "Copied!" toast for 2 seconds
 
-### Task 20: Implement content script auto-restore on page load
+- [x]
+
+### Task 20:
+
+- [x]
 
 On initialization (`document_end`):
 1. Extract domain from `window.location.hostname`
@@ -375,6 +417,8 @@ On initialization (`document_end`):
 4. Log restored rule count for debugging
 
 ### Task 21: Set up testing infrastructure
+
+- [ ]
 
 ```bash
 npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom
@@ -397,6 +441,8 @@ Testing strategy:
 
 ### Task 22: Verify the build
 
+- [x]
+
 ```bash
 npm run build
 ```
@@ -415,6 +461,8 @@ dist/
 
 ### Task 23: Load unpacked extension in Chrome
 
+- [ ]
+
 1. Open `chrome://extensions`
 2. Enable Developer mode (top-right toggle)
 3. Click "Load unpacked"
@@ -424,6 +472,8 @@ dist/
 7. Click an element and verify: highlighter appears, panel opens with styles
 
 ### Task 24: Run initial test suite
+
+- [ ]
 
 ```bash
 npm run test          # Unit + component tests
