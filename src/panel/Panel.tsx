@@ -1,17 +1,21 @@
 import { BoxModel } from './components/BoxModel'
 import { Typography } from './components/Typography'
 import { ColorPicker } from './components/ColorPicker'
+import { ClassInput } from './components/ClassInput'
 import { ExportPanel } from './components/ExportPanel'
 import type { StyleMap } from '@/types'
 
 interface PanelProps {
   selector: string
   styles: StyleMap
+  classNames: string[]
   onUpdate: (selector: string, property: string, value: string) => void
   onClose: () => void
+  onAddClass: (className: string) => void
+  onRemoveClass: (className: string) => void
 }
 
-export function Panel({ selector, styles, onUpdate, onClose }: PanelProps) {
+export function Panel({ selector, styles, classNames, onUpdate, onClose, onAddClass, onRemoveClass }: PanelProps) {
   return (
     <div className="fixed top-0 right-0 w-80 h-full bg-white border-l border-slate-200 shadow-lg flex flex-col" style={{ zIndex: 2147483646 }} role="dialog" aria-label="NovaStyle style editor">
       <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
@@ -30,6 +34,7 @@ export function Panel({ selector, styles, onUpdate, onClose }: PanelProps) {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <ClassInput classes={classNames} onAdd={onAddClass} onRemove={onRemoveClass} />
         <BoxModel selector={selector} onUpdate={onUpdate} />
         <Typography selector={selector} onUpdate={onUpdate} />
         <ColorPicker selector={selector} onUpdate={onUpdate} />

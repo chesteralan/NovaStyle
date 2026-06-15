@@ -27,8 +27,13 @@ export type SaveStylesMessage = {
   styles: StyleMap
 }
 
+export type UpdateClassesMessage = {
+  type: 'UPDATE_CLASSES'
+  classes: string[]
+}
+
 export type BackgroundMessage = GetStylesMessage | SaveStylesMessage
-export type ContentMessage = ExtensionToggleMessage
+export type ContentMessage = ExtensionToggleMessage | UpdateClassesMessage
 
 declare global {
   interface Window {

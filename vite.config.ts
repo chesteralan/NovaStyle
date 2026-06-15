@@ -14,6 +14,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         panel: path.resolve(__dirname, 'index.html'),
+        options: path.resolve(__dirname, 'options.html'),
         'content-script': path.resolve(__dirname, 'src/content/content-script.ts'),
         'service-worker': path.resolve(__dirname, 'src/background/service-worker.ts'),
       },

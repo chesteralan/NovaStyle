@@ -7,6 +7,7 @@ import type { ContentMessage } from '@/types'
 let highlighter: HighlighterState | null = null
 let active = false
 let panelMountPoint: HTMLElement | null = null
+let lastClicked: HTMLElement | null = null
 
 function onMouseOver(e: MouseEvent) {
   if (!active || !highlighter) return
@@ -31,13 +32,16 @@ function onClick(e: MouseEvent) {
   drawHighlighter(highlighter, target)
   const selector = computeSelector(target)
   const styles = extractStyles(target)
+  const classes = Array.from(target.classList)
+  lastClicked = target
   updateStylesheet(styles)
 
   if (panelMountPoint) {
     panelMountPoint.dataset.novastyleSelector = selector
     panelMountPoint.dataset.novastyleStyles = JSON.stringify(styles)
+    panelMountPoint.dataset.novastyleClasses = JSON.stringify(classes)
     panelMountPoint.dispatchEvent(new CustomEvent('novastyle:update-element', {
-      detail: { selector, styles },
+      detail: { selector, styles, classes },
     }))
   } else {
     openPanel(selector, styles)
@@ -83,6 +87,10 @@ function openPanel(selector: string, styles: Record<string, Record<string, strin
     const { styles } = e.detail as { styles: Record<string, Record<string, string>> }
     updateStylesheet(styles)
     saveStyles(domain, styles)
+  }) as EventListener)
+  window.addEventListener('novastyle:update-classes', ((e: CustomEvent) => {
+    const { classes } = e.detail as { classes: string[] }
+    if (lastClicked) lastClicked.className = classes.join(' ')
   }) as EventListener)
 }
 

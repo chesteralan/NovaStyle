@@ -35,14 +35,23 @@ if (mountPoint?.dataset?.novastyleStyles) {
   try {
     initialStyles = JSON.parse(mountPoint.dataset.novastyleStyles)
   } catch {
-    // invalid JSON
+    //
+  }
+}
+
+let initialClasses: string[] = []
+if (mountPoint?.dataset?.novastyleClasses) {
+  try {
+    initialClasses = JSON.parse(mountPoint.dataset.novastyleClasses)
+  } catch {
+    //
   }
 }
 
 if (mountPoint) {
   createRoot(mountPoint).render(
     <StrictMode>
-      <App selector={getSelector()} initialStyles={initialStyles} />
+      <App selector={getSelector()} initialStyles={initialStyles} initialClasses={initialClasses} />
     </StrictMode>,
   )
 }

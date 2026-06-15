@@ -5,6 +5,7 @@ const MAX_UNDO = 50
 
 interface StyleStore {
   styles: StyleMap
+  classNames: string[]
   undoStack: StyleMap[]
   redoStack: StyleMap[]
   updateStyle: (selector: string, property: string, value: string) => void
@@ -13,10 +14,14 @@ interface StyleStore {
   undo: () => void
   redo: () => void
   setStyles: (styles: StyleMap) => void
+  setClassNames: (names: string[]) => void
+  addClass: (name: string) => void
+  removeClass: (name: string) => void
 }
 
 export const useStyleStore = create<StyleStore>((set, get) => ({
   styles: {},
+  classNames: [],
   undoStack: [],
   redoStack: [],
 
@@ -86,4 +91,17 @@ export const useStyleStore = create<StyleStore>((set, get) => ({
   },
 
   setStyles: (styles) => set({ styles }),
+
+  setClassNames: (names) => set({ classNames: names }),
+
+  addClass: (name) => {
+    const { classNames } = get()
+    if (classNames.includes(name)) return
+    set({ classNames: [...classNames, name] })
+  },
+
+  removeClass: (name) => {
+    const { classNames } = get()
+    set({ classNames: classNames.filter((c) => c !== name) })
+  },
 }))
