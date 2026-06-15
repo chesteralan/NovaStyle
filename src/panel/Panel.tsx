@@ -13,7 +13,7 @@ interface PanelProps {
 
 export function Panel({ selector, styles, onUpdate, onClose }: PanelProps) {
   return (
-    <div className="fixed top-0 right-0 w-80 h-full bg-white border-l border-slate-200 shadow-lg z-50 flex flex-col" role="dialog" aria-label="NovaStyle style editor">
+    <div className="fixed top-0 right-0 w-80 h-full bg-white border-l border-slate-200 shadow-lg flex flex-col" style={{ zIndex: 2147483646 }} role="dialog" aria-label="NovaStyle style editor">
       <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
         <span className="text-sm font-semibold text-slate-700" id="novastyle-heading">NovaStyle</span>
         <button

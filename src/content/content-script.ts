@@ -59,7 +59,7 @@ function openPanel(selector: string, styles: Record<string, Record<string, strin
   panelMountPoint = mountPoint
 
   const styleTag = document.createElement('style')
-  styleTag.textContent = `:host { all: initial; display: block; }`
+  styleTag.textContent = `:host { all: initial; display: block; position: relative; z-index: 2147483646; }`
   shadow.appendChild(styleTag)
 
   const cssLink = document.createElement('link')
