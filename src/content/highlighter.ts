@@ -26,8 +26,8 @@ export function drawHighlighter(state: HighlighterState, el: HTMLElement) {
   if (!state.overlay) return
   const rect = el.getBoundingClientRect()
   state.overlay.style.display = 'block'
-  state.overlay.style.top = `${rect.top + window.scrollY}px`
-  state.overlay.style.left = `${rect.left + window.scrollX}px`
+  state.overlay.style.top = `${rect.top}px`
+  state.overlay.style.left = `${rect.left}px`
   state.overlay.style.width = `${rect.width}px`
   state.overlay.style.height = `${rect.height}px`
   state.el = el
