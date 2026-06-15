@@ -1,10 +1,10 @@
 import { createHighlighter, drawHighlighter, hideHighlighter, destroyHighlighter, type HighlighterState } from './highlighter'
 import { computeSelector, extractStyles } from './selector'
-import { updateStylesheet } from './injector'
+import { updateStylesheet, clearStylesheet } from './injector'
+import { saveStyles } from '@/storage/db'
 
 let highlighter: HighlighterState | null = null
 let active = false
-let selectedSelector: string | null = null
 
 function onMouseOver(e: MouseEvent) {
   if (!active || !highlighter) return
@@ -27,44 +27,62 @@ function onClick(e: MouseEvent) {
   e.preventDefault()
   e.stopPropagation()
   drawHighlighter(highlighter, target)
-  selectedSelector = computeSelector(target)
+  const selector = computeSelector(target)
   const styles = extractStyles(target)
   updateStylesheet(styles)
-  openPanel(selectedSelector, styles[selectedSelector])
+  openPanel(selector)
 }
 
-function openPanel(selector: string, _initialStyles: Record<string, string>) {
-  const existing = document.getElementById('novastyle-root')
-  if (existing) return
+function openPanel(selector: string) {
+  if (document.getElementById('novastyle-root')) return
   const container = document.createElement('div')
   container.id = 'novastyle-root'
   const shadow = container.attachShadow({ mode: 'open' })
   document.body.appendChild(container)
+
+  const mountPoint = document.createElement('div')
+  mountPoint.id = 'novastyle-panel-root'
+  shadow.appendChild(mountPoint)
+
   const style = document.createElement('style')
-  style.textContent = `
-    :host { all: initial; display: block; }
-    #panel { position: fixed; top: 0; right: 0; width: 320px; height: 100vh; background: #fff; border-left: 1px solid #e2e8f0; box-shadow: -4px 0 12px rgba(0,0,0,0.08); z-index: 2147483647; font-family: system-ui, sans-serif; display: flex; flex-direction: column; }
-    #header { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; }
-    #selector { padding: 8px 16px; font-size: 11px; color: #64748b; border-bottom: 1px solid #e2e8f0; word-break: break-all; font-family: monospace; }
-  `
+  style.textContent = `:host { all: initial; display: block; }`
   shadow.appendChild(style)
-  const panel = document.createElement('div')
-  panel.innerHTML = `
-    <div id="panel">
-      <div id="header"><span>NovaStyle</span><button id="close-btn">✕</button></div>
-      <div id="selector">${selector}</div>
-    </div>
-  `
-  shadow.appendChild(panel)
-  panel.querySelector('#close-btn')?.addEventListener('click', closePanel)
+
+  const cssLink = document.createElement('link')
+  cssLink.rel = 'stylesheet'
+  cssLink.href = chrome.runtime.getURL('assets/panel.css')
+  shadow.appendChild(cssLink)
+
+  const domain = window.location.hostname.replace(/^www\./, '')
+
+  const configScript = document.createElement('script')
+  configScript.textContent = `window.__NOVASTYLE_CONFIG__ = ${JSON.stringify({
+    containerId: 'novastyle-root',
+    mountPointId: 'novastyle-panel-root',
+    selector,
+    domain,
+  })}`
+  document.body.appendChild(configScript)
+
+  const mainScript = document.createElement('script')
+  mainScript.src = chrome.runtime.getURL('assets/panel.js')
+  document.body.appendChild(mainScript)
+
+  window.addEventListener('novastyle:close', () => closePanel(), { once: true })
+  window.addEventListener('novastyle:update', ((e: CustomEvent) => {
+    const { styles } = e.detail as { styles: Record<string, Record<string, string>> }
+    updateStylesheet(styles)
+    saveStyles(domain, styles)
+  }) as EventListener)
 }
 
 function closePanel() {
   const container = document.getElementById('novastyle-root')
-  if (container && container.parentNode) {
+  if (container?.parentNode) {
     container.parentNode.removeChild(container)
   }
-  selectedSelector = null
+  clearStylesheet()
+  window.removeEventListener('novastyle:close', closePanel)
 }
 
 function activate() {
@@ -92,10 +110,10 @@ chrome.runtime.onMessage.addListener((message: any) => {
   }
 })
 
-chrome.storage.local.get(window.location.hostname).then((result: any) => {
-  const data = result[window.location.hostname]
+const domain = window.location.hostname.replace(/^www\./, '')
+chrome.storage.local.get(domain).then((result: any) => {
+  const data = result[domain]
   if (data?.styles) {
     updateStylesheet(data.styles)
-    console.log(`[NovaStyle] Restored ${Object.keys(data.styles).length} rule(s)`)
   }
 })

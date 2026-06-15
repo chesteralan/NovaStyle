@@ -2,12 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NovaStyle</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="novastyle-root"></div>
+    <script>
+      window.__NOVASTYLE_CONFIG__ = {
+        containerId: 'novastyle-root',
+        mountPointId: 'novastyle-panel-root',
+        selector: 'div > p',
+        domain: 'localhost',
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
