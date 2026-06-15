@@ -6,6 +6,7 @@ import type { ContentMessage } from '@/types'
 
 let highlighter: HighlighterState | null = null
 let active = false
+let panelMountPoint: HTMLElement | null = null
 
 function onMouseOver(e: MouseEvent) {
   if (!active || !highlighter) return
@@ -31,10 +32,19 @@ function onClick(e: MouseEvent) {
   const selector = computeSelector(target)
   const styles = extractStyles(target)
   updateStylesheet(styles)
-  openPanel(selector)
+
+  if (panelMountPoint) {
+    panelMountPoint.dataset.novastyleSelector = selector
+    panelMountPoint.dataset.novastyleStyles = JSON.stringify(styles)
+    panelMountPoint.dispatchEvent(new CustomEvent('novastyle:update-element', {
+      detail: { selector, styles },
+    }))
+  } else {
+    openPanel(selector, styles)
+  }
 }
 
-function openPanel(selector: string) {
+function openPanel(selector: string, styles: Record<string, Record<string, string>>) {
   if (document.getElementById('novastyle-root')) return
   const container = document.createElement('div')
   container.id = 'novastyle-root'
@@ -43,7 +53,10 @@ function openPanel(selector: string) {
 
   const mountPoint = document.createElement('div')
   mountPoint.id = 'novastyle-panel-root'
+  mountPoint.dataset.novastyleSelector = selector
+  mountPoint.dataset.novastyleStyles = JSON.stringify(styles)
   shadow.appendChild(mountPoint)
+  panelMountPoint = mountPoint
 
   const styleTag = document.createElement('style')
   styleTag.textContent = `:host { all: initial; display: block; }`
@@ -74,6 +87,7 @@ function openPanel(selector: string) {
 }
 
 function closePanel() {
+  panelMountPoint = null
   if (!document.getElementById('novastyle-root')) return
   const container = document.getElementById('novastyle-root')
   if (container?.parentNode) {

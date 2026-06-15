@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './panel/App'
 import './panel/styles/panel.css'
+import type { StyleMap } from '@/types'
 
 const containerId = 'novastyle-root'
 const mountPointId = 'novastyle-panel-root'
@@ -29,10 +30,19 @@ if (!mountPoint && container) {
   container.appendChild(mountPoint)
 }
 
+let initialStyles: StyleMap = {}
+if (mountPoint?.dataset?.novastyleStyles) {
+  try {
+    initialStyles = JSON.parse(mountPoint.dataset.novastyleStyles)
+  } catch {
+    // invalid JSON
+  }
+}
+
 if (mountPoint) {
   createRoot(mountPoint).render(
     <StrictMode>
-      <App selector={getSelector()} />
+      <App selector={getSelector()} initialStyles={initialStyles} />
     </StrictMode>,
   )
 }
