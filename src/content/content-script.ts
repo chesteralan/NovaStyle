@@ -56,17 +56,9 @@ function openPanel(selector: string) {
 
   const domain = window.location.hostname.replace(/^www\./, '')
 
-  const configScript = document.createElement('script')
-  configScript.textContent = `window.__NOVASTYLE_CONFIG__ = ${JSON.stringify({
-    containerId: 'novastyle-root',
-    mountPointId: 'novastyle-panel-root',
-    selector,
-    domain,
-  })}`
-  document.body.appendChild(configScript)
-
   const mainScript = document.createElement('script')
-  mainScript.src = chrome.runtime.getURL('assets/panel.js')
+  const params = new URLSearchParams({ selector, domain })
+  mainScript.src = chrome.runtime.getURL(`assets/panel.js?${params}`)
   mainScript.onerror = () => {
     console.error('NovaStyle: Failed to load panel script')
     closePanel()
