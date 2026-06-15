@@ -3,6 +3,8 @@ import type { StyleMap } from '@/types'
 let styleEl: HTMLStyleElement | null = null
 let timeoutId: ReturnType<typeof setTimeout> | null = null
 
+const DEBOUNCE_MS = 50
+
 export function updateStylesheet(styles: StyleMap) {
   if (timeoutId) clearTimeout(timeoutId)
   timeoutId = setTimeout(() => {
@@ -22,7 +24,7 @@ export function updateStylesheet(styles: StyleMap) {
     }
     styleEl.textContent = lines.join('\n')
     timeoutId = null
-  }, 50)
+  }, DEBOUNCE_MS)
 }
 
 export function clearStylesheet() {

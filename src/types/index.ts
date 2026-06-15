@@ -4,17 +4,34 @@ export interface StyleMap {
   }
 }
 
-export interface ChangeRecord {
+export interface NovaStyleConfig {
+  containerId: string
+  mountPointId: string
   selector: string
-  property: string
-  previousValue: string | null
-  newValue: string
-  timestamp: number
+  domain: string
 }
 
-export interface PersistedDomain {
+export type ExtensionToggleMessage = {
+  type: 'TOGGLE_EXTENSION'
+  state: 'active' | 'inactive'
+}
+
+export type GetStylesMessage = {
+  type: 'GET_STYLES'
+  domain: string
+}
+
+export type SaveStylesMessage = {
+  type: 'SAVE_STYLES'
+  domain: string
   styles: StyleMap
-  updatedAt: number
 }
 
-export type ExtensionState = 'active' | 'inactive'
+export type BackgroundMessage = GetStylesMessage | SaveStylesMessage
+export type ContentMessage = ExtensionToggleMessage
+
+declare global {
+  interface Window {
+    __NOVASTYLE_CONFIG__?: NovaStyleConfig
+  }
+}

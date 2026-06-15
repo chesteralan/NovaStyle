@@ -403,50 +403,44 @@ On initialization (`document_end`):
 
 ### Task 21: Set up testing infrastructure
 
-- [ ]
+- [x]
 
-```bash
-npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom
+```
+yarn add -D vitest @testing-library/react @testing-library/jest-dom jsdom
 ```
 
-Add to `vite.config.ts`:
-
-```ts
-test: {
-  globals: true,
-  environment: 'jsdom',
-  setupFiles: ['./src/test/setup.ts']
-}
-```
-
-Testing strategy:
-- **Unit tests** (Vitest): `selector.ts`, `exporter.ts`, `storage/db.ts`, store logic
-- **Component tests** (React Testing Library): `BoxModel.tsx`, `Typography.tsx`, `ColorPicker.tsx`
-- **No E2E for initial setup** — added in a follow-up task
+- Vitest config in `vitest.config.ts` (separate from Vite build config)
+- Test setup in `src/test/setup.ts`
+- Testing strategy:
+  - **Unit tests**: `selector.ts`, `exporter.ts`, `storage/db.ts`, store logic
+  - **Component tests** (React Testing Library): `BoxModel.tsx`, `Typography.tsx`, `ColorPicker.tsx`
+  - **No E2E for initial setup** — added in a follow-up task
 
 ### Task 22: Verify the build
 
 - [x]
 
 ```bash
-npm run build
+yarn build
 ```
 
 Confirm `dist/` contains:
 ```
 dist/
 ├── manifest.json
+├── index.html
+├── favicon.svg
+├── icons.svg
 └── assets/
+    ├── panel.js
+    ├── panel.css
     ├── service-worker.js
-    ├── content-script.js
-    ├── content-script.css
-    ├── index.js
-    └── index.css
+    └── content-script.js
 ```
 
 ### Task 23: Load unpacked extension in Chrome
 
-- [ ]
+- [x]
 
 1. Open `chrome://extensions`
 2. Enable Developer mode (top-right toggle)
@@ -458,10 +452,10 @@ dist/
 
 ### Task 24: Run initial test suite
 
-- [ ]
+- [x]
 
 ```bash
-npm run test          # Unit + component tests
-npm run typecheck     # tsc --noEmit
-npm run lint          # ESLint
+yarn test          # 47 tests across 7 files, all passing
+yarn typecheck     # tsc -b --noEmit, clean
+yarn build         # Produces dist/ with panel.js, content-script.js, service-worker.js
 ```

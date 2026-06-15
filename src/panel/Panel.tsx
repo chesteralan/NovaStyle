@@ -13,19 +13,20 @@ interface PanelProps {
 
 export function Panel({ selector, styles, onUpdate, onClose }: PanelProps) {
   return (
-    <div className="fixed top-0 right-0 w-80 h-full bg-white border-l border-slate-200 shadow-lg z-50 flex flex-col">
+    <div className="fixed top-0 right-0 w-80 h-full bg-white border-l border-slate-200 shadow-lg z-50 flex flex-col" role="dialog" aria-label="NovaStyle style editor">
       <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
-        <span className="text-sm font-semibold text-slate-700">NovaStyle</span>
+        <span className="text-sm font-semibold text-slate-700" id="novastyle-heading">NovaStyle</span>
         <button
           className="text-slate-400 hover:text-slate-600 text-sm leading-none"
           onClick={onClose}
+          aria-label="Close panel"
         >
           ✕
         </button>
       </div>
 
       <div className="px-4 py-2 border-b border-slate-200">
-        <code className="text-[11px] text-slate-500 font-mono break-all">{selector}</code>
+        <code className="text-[11px] text-slate-500 font-mono break-all" aria-label="Selected element selector">{selector}</code>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-6">

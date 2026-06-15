@@ -18,6 +18,7 @@ export function BoxModel({ selector, onUpdate }: BoxModelProps) {
                 key={side}
                 type="number"
                 placeholder={side}
+                aria-label={`${layer} ${side}`}
                 className="w-full px-1.5 py-0.5 text-xs border border-slate-200 rounded"
                 onChange={(e) => onUpdate(selector, `${layer}-${side}`, `${e.target.value}px`)}
               />

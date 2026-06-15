@@ -4,7 +4,6 @@ import { useStyleStore } from './hooks/useStyles'
 
 interface AppProps {
   selector: string
-  domain?: string
 }
 
 export function App({ selector }: AppProps) {

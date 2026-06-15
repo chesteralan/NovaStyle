@@ -12,12 +12,14 @@ export function ColorPicker({ selector, onUpdate }: ColorPickerProps) {
         <label className="text-xs text-slate-400 w-24">Text Color</label>
         <input
           type="color"
+          aria-label="Text color picker"
           className="w-8 h-8 p-0 border border-slate-200 rounded cursor-pointer"
           onChange={(e) => onUpdate(selector, 'color', e.target.value)}
         />
         <input
           type="text"
           placeholder="#000000"
+          aria-label="Text color hex"
           className="flex-1 px-2 py-1 text-xs border border-slate-200 rounded font-mono"
           onChange={(e) => onUpdate(selector, 'color', e.target.value)}
         />
@@ -27,12 +29,14 @@ export function ColorPicker({ selector, onUpdate }: ColorPickerProps) {
         <label className="text-xs text-slate-400 w-24">Background</label>
         <input
           type="color"
+          aria-label="Background color picker"
           className="w-8 h-8 p-0 border border-slate-200 rounded cursor-pointer"
           onChange={(e) => onUpdate(selector, 'background-color', e.target.value)}
         />
         <input
           type="text"
           placeholder="#ffffff"
+          aria-label="Background color hex"
           className="flex-1 px-2 py-1 text-xs border border-slate-200 rounded font-mono"
           onChange={(e) => onUpdate(selector, 'background-color', e.target.value)}
         />

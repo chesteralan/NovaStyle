@@ -2,6 +2,7 @@ import { createHighlighter, drawHighlighter, hideHighlighter, destroyHighlighter
 import { computeSelector, extractStyles } from './selector'
 import { updateStylesheet, clearStylesheet } from './injector'
 import { saveStyles } from '@/storage/db'
+import type { ContentMessage } from '@/types'
 
 let highlighter: HighlighterState | null = null
 let active = false
@@ -44,9 +45,9 @@ function openPanel(selector: string) {
   mountPoint.id = 'novastyle-panel-root'
   shadow.appendChild(mountPoint)
 
-  const style = document.createElement('style')
-  style.textContent = `:host { all: initial; display: block; }`
-  shadow.appendChild(style)
+  const styleTag = document.createElement('style')
+  styleTag.textContent = `:host { all: initial; display: block; }`
+  shadow.appendChild(styleTag)
 
   const cssLink = document.createElement('link')
   cssLink.rel = 'stylesheet'
@@ -66,6 +67,10 @@ function openPanel(selector: string) {
 
   const mainScript = document.createElement('script')
   mainScript.src = chrome.runtime.getURL('assets/panel.js')
+  mainScript.onerror = () => {
+    console.error('NovaStyle: Failed to load panel script')
+    closePanel()
+  }
   document.body.appendChild(mainScript)
 
   window.addEventListener('novastyle:close', () => closePanel(), { once: true })
@@ -77,15 +82,16 @@ function openPanel(selector: string) {
 }
 
 function closePanel() {
+  if (!document.getElementById('novastyle-root')) return
   const container = document.getElementById('novastyle-root')
   if (container?.parentNode) {
     container.parentNode.removeChild(container)
   }
   clearStylesheet()
-  window.removeEventListener('novastyle:close', closePanel)
 }
 
 function activate() {
+  if (active) return
   active = true
   highlighter = createHighlighter()
   document.addEventListener('mouseover', onMouseOver, { capture: true })
@@ -94,6 +100,7 @@ function activate() {
 }
 
 function deactivate() {
+  if (!active) return
   active = false
   if (highlighter) destroyHighlighter(highlighter)
   highlighter = null
@@ -103,16 +110,17 @@ function deactivate() {
   closePanel()
 }
 
-chrome.runtime.onMessage.addListener((message: any) => {
-  if (message.type === 'TOGGLE_EXTENSION') {
-    if (message.state === 'active') activate()
+chrome.runtime.onMessage.addListener((message: unknown) => {
+  const msg = message as ContentMessage
+  if (msg.type === 'TOGGLE_EXTENSION') {
+    if (msg.state === 'active') activate()
     else deactivate()
   }
 })
 
 const domain = window.location.hostname.replace(/^www\./, '')
-chrome.storage.local.get(domain).then((result: any) => {
-  const data = result[domain]
+chrome.storage.local.get(domain).then((result: unknown) => {
+  const data = (result as Record<string, { styles?: Record<string, Record<string, string>> } | undefined>)[domain]
   if (data?.styles) {
     updateStylesheet(data.styles)
   }

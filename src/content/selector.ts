@@ -1,5 +1,7 @@
 import type { StyleMap } from '@/types'
 
+const DATA_ATTRS = ['data-testid', 'data-cy', 'data-test'] as const
+
 export function computeSelector(el: Element): string {
   if (el.id) return `#${CSS.escape(el.id)}`
 
@@ -13,8 +15,7 @@ export function computeSelector(el: Element): string {
     if (unique) return `.${CSS.escape(unique)}`
   }
 
-  const dataAttrs = ['data-testid', 'data-cy', 'data-test']
-  for (const attr of dataAttrs) {
+  for (const attr of DATA_ATTRS) {
     const val = el.getAttribute(attr)
     if (val) return `[${attr}="${val}"]`
   }
@@ -42,18 +43,19 @@ function buildNthPath(el: Element): string {
   return segments.join(' > ')
 }
 
+const EXTRACT_PROPS = [
+  'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
+  'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
+  'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width',
+  'font-size', 'line-height', 'letter-spacing', 'font-weight',
+  'text-align', 'font-family',
+  'color', 'background-color', 'background',
+] as const
+
 export function extractStyles(el: Element): StyleMap {
   const computed = getComputedStyle(el)
-  const props = [
-    'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
-    'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
-    'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width',
-    'font-size', 'line-height', 'letter-spacing', 'font-weight',
-    'text-align', 'font-family',
-    'color', 'background-color', 'background',
-  ]
   const styles: Record<string, string> = {}
-  for (const prop of props) {
+  for (const prop of EXTRACT_PROPS) {
     const val = computed.getPropertyValue(prop)
     if (val && val !== 'none' && val !== 'normal') {
       styles[prop] = val

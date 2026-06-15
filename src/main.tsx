@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { App } from './panel/App'
 import './panel/styles/panel.css'
 
-const config = (window as any).__NOVASTYLE_CONFIG__
+const config = window.__NOVASTYLE_CONFIG__
 const containerId = config?.containerId ?? 'novastyle-root'
 const mountId = config?.mountPointId ?? 'novastyle-panel-root'
 
@@ -20,10 +20,7 @@ if (!mountPoint && container) {
 if (mountPoint) {
   createRoot(mountPoint).render(
     <StrictMode>
-      <App
-        selector={config?.selector ?? ''}
-        domain={config?.domain ?? ''}
-      />
+      <App selector={config?.selector ?? ''} />
     </StrictMode>,
   )
 }

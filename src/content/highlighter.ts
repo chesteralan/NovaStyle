@@ -1,3 +1,5 @@
+const HIGHLIGHTER_Z_INDEX = 2147483646
+
 export interface HighlighterState {
   el: HTMLElement | null
   overlay: HTMLDivElement | null
@@ -10,7 +12,7 @@ export function createHighlighter(): HighlighterState {
   overlay.style.cssText = `
     position: fixed;
     pointer-events: none;
-    z-index: 2147483646;
+    z-index: ${HIGHLIGHTER_Z_INDEX};
     border: 2px dashed #3b82f6;
     background: rgba(59, 130, 246, 0.08);
     transition: none;
