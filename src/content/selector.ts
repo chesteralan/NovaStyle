@@ -61,5 +61,17 @@ export function extractStyles(el: Element): StyleMap {
       styles[prop] = val
     }
   }
+  const inlineStyle = el.getAttribute('style')
+  if (inlineStyle) {
+    for (const decl of inlineStyle.split(';')) {
+      const trimmed = decl.trim()
+      if (!trimmed) continue
+      const colon = trimmed.indexOf(':')
+      if (colon === -1) continue
+      const prop = trimmed.slice(0, colon).trim()
+      const val = trimmed.slice(colon + 1).trim()
+      if (prop && val) styles[prop] = val
+    }
+  }
   return { [`${computeSelector(el)}`]: styles }
 }

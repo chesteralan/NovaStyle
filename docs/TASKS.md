@@ -39,17 +39,16 @@
 - [x] Custom CSS injection (user-defined overrides unrelated to selected elements)
 - [ ] CSS animation / transition editor
 - [ ] Grid layout helper
-- [x] Color palette extraction from page
-- [ ] Responsive preview mode toggle
+- [x] Responsive preview mode toggle
 
 ## Phase 4: Advanced Features
 
 - [x] Sync via `chrome.storage.sync` (cross-device)
-- [ ] Preset themes (e.g., "dark reader", "high contrast", "sepia")
-- [ ] Per-domain enable/disable toggle
+- [x] Preset themes (e.g., "dark reader", "high contrast", "sepia")
+- [x] Per-domain enable/disable toggle
 - [x] Ignored domains list (extension inactive on these sites)
-- [ ] Inline style extraction (pull existing inline styles into editor)
-- [ ] Class-to-style resolution (display computed styles for Tailwind classes)
+- [x] Inline style extraction (pull existing inline styles into editor)
+- [x] Class-to-style resolution (display computed styles for Tailwind classes)
 - [x] Keyboard shortcut configuration UI
 - [ ] Export as Chrome extension / bookmarklet
 

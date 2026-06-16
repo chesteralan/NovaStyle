@@ -7,6 +7,8 @@ import {
   renameDomain,
   getVersions,
   revertToVersion,
+  isDomainEnabled,
+  setDomainEnabled,
   type NovaStyleSettings,
 } from '@/storage/db'
 import type { StyleMap } from '@/types'
@@ -45,6 +47,7 @@ export function Options() {
   const [renameValue, setRenameValue] = useState('')
   const [showHistoryFor, setShowHistoryFor] = useState<string | null>(null)
   const [versions, setVersions] = useState<Array<{ styles: StyleMap; timestamp: number }>>([])
+  const [disabled, setDisabled] = useState<Set<string>>(new Set())
   const [settings, setSettings] = useState<NovaStyleSettings>({
     defaultPosition: 'right',
     panelWidth: 320,
@@ -72,6 +75,8 @@ export function Options() {
       })),
     )
     setSettings(savedSettings)
+    const states = await Promise.all(domains.map((d) => isDomainEnabled(d.domain).then((e) => ({ domain: d.domain, enabled: e }))))
+    setDisabled(new Set(states.filter((s) => !s.enabled).map((s) => s.domain)))
     setLoading(false)
   }, [])
 
@@ -107,12 +112,24 @@ export function Options() {
   }
 
   const toggleSelectAll = () => {
-    const currentFiltered = filtered.map((e) => e.domain)
+    const currentFiltered = sorted.map((e) => e.domain)
     setSelectedDomains((prev) => {
       const allSelected = currentFiltered.every((d) => prev.has(d))
       if (allSelected) return new Set()
       return new Set(currentFiltered)
     })
+  }
+
+  const handleToggleDomain = async (domain: string) => {
+    const next = new Set(disabled)
+    if (next.has(domain)) {
+      next.delete(domain)
+      await setDomainEnabled(domain, true)
+    } else {
+      next.add(domain)
+      await setDomainEnabled(domain, false)
+    }
+    setDisabled(next)
   }
 
   const handleBulkDelete = async () => {
@@ -398,6 +415,13 @@ export function Options() {
                             >
                               {entry.expanded ? '▾' : '▸'}
                             </button>
+                            <button
+                              className={`text-xs shrink-0 ${disabled.has(entry.domain) ? 'text-red-400' : 'text-green-500'}`}
+                              onClick={() => handleToggleDomain(entry.domain)}
+                              aria-label={disabled.has(entry.domain) ? `Enable ${entry.domain}` : `Disable ${entry.domain}`}
+                            >
+                              {disabled.has(entry.domain) ? '⊙' : '●'}
+                            </button>
                             {renaming === entry.domain ? (
                               <form
                                 className="flex items-center gap-1 min-w-0"
@@ -582,20 +606,46 @@ export function Options() {
 
           {/* Theme */}
           <AccordionSection title="Theme">
-            <div className="flex items-center gap-4">
-              {(['light', 'dark'] as const).map((t) => (
-                <label key={t} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="theme"
-                    value={t}
-                    checked={settings.theme === t}
-                    onChange={() => updateSetting('theme', t)}
-                    className="border-slate-300"
-                  />
-                  <span className="text-sm text-slate-700 capitalize">{t}</span>
-                </label>
-              ))}
+            <div className="space-y-3">
+              <div className="flex items-center gap-4">
+                {(['light', 'dark'] as const).map((t) => (
+                  <label key={t} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="theme"
+                      value={t}
+                      checked={settings.theme === t}
+                      onChange={() => updateSetting('theme', t)}
+                      className="border-slate-300"
+                    />
+                    <span className="text-sm text-slate-700 capitalize">{t}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="border-t border-slate-100 pt-3">
+                <p className="text-xs font-medium text-slate-700 mb-1.5">Preset Themes</p>
+                <p className="text-xs text-slate-400 mb-2">Apply a preset via Custom CSS in the panel.</p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { name: 'Sepia', css: 'html { filter: sepia(0.5); }' },
+                    { name: 'Dark Reader', css: 'html { filter: invert(0.9) hue-rotate(180deg); } img, video { filter: invert(1) hue-rotate(180deg); }' },
+                    { name: 'High Contrast', css: 'html { filter: contrast(1.5); }' },
+                    { name: 'Night Shift', css: 'html { filter: sepia(0.3) brightness(0.8); }' },
+                  ].map((preset) => (
+                    <button
+                      key={preset.name}
+                      className="text-xs px-3 py-1.5 bg-white border border-slate-200 rounded-md hover:bg-slate-50 text-slate-700"
+                      onClick={() => {
+                        navigator.clipboard.writeText(preset.css)
+                        showMessage(`Copied "${preset.name}" CSS to clipboard`)
+                      }}
+                      aria-label={`Copy ${preset.name} preset`}
+                    >
+                      {preset.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </AccordionSection>
 

@@ -8,6 +8,8 @@ import { EffectsEditor } from './components/EffectsEditor'
 import { FontDetector } from './components/FontDetector'
 import { CustomCSS } from './components/CustomCSS'
 import { ColorPalette } from './components/ColorPalette'
+import { ResponsivePreview } from './components/ResponsivePreview'
+import { ClassResolver } from './components/ClassResolver'
 import { ExportPanel } from './components/ExportPanel'
 import type { StyleMap, NovaStyleSettings } from '@/types'
 
@@ -227,6 +229,15 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
         </Accordion>
         <Accordion title="Fonts">
           <FontDetector />
+        </Accordion>
+        <Accordion title="Palette">
+          <ColorPalette />
+        </Accordion>
+        <Accordion title="Class Resolver">
+          <ClassResolver classNames={classNames} />
+        </Accordion>
+        <Accordion title="Responsive">
+          <ResponsivePreview />
         </Accordion>
         <Accordion title="Custom CSS">
           <CustomCSS />
