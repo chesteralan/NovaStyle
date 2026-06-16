@@ -5,6 +5,9 @@ import { ColorPicker } from './components/ColorPicker'
 import { ClassInput } from './components/ClassInput'
 import { BorderEditor } from './components/BorderEditor'
 import { EffectsEditor } from './components/EffectsEditor'
+import { LayoutEditor } from './components/LayoutEditor'
+import { FlexboxEditor } from './components/FlexboxEditor'
+import { TransformEditor } from './components/TransformEditor'
 import { FontDetector } from './components/FontDetector'
 import { CustomCSS } from './components/CustomCSS'
 import { ColorPalette } from './components/ColorPalette'
@@ -205,27 +208,56 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
             <ColorPicker selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
           </Accordion>
         )}
-        <Accordion title="Palette">
-          <ColorPalette />
-        </Accordion>
-        <Accordion title="Border">
-          <BorderEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-        </Accordion>
-        <Accordion title="Effects">
-          <EffectsEditor selector={selector} onUpdate={onUpdate} />
-        </Accordion>
-        <Accordion title="Fonts">
-          <FontDetector />
-        </Accordion>
-        <Accordion title="Class Resolver">
-          <ClassResolver classNames={classNames} />
-        </Accordion>
-        <Accordion title="Responsive">
-          <ResponsivePreview />
-        </Accordion>
-        <Accordion title="Custom CSS">
-          <CustomCSS />
-        </Accordion>
+        {visibleEditors?.layoutEditor !== false && (
+          <Accordion title="Layout">
+            <LayoutEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.flexboxEditor !== false && (
+          <Accordion title="Flexbox">
+            <FlexboxEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.transformEditor !== false && (
+          <Accordion title="Transform">
+            <TransformEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.borderEditor !== false && (
+          <Accordion title="Border">
+            <BorderEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.effectsEditor !== false && (
+          <Accordion title="Effects">
+            <EffectsEditor selector={selector} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.colorPalette !== false && (
+          <Accordion title="Palette">
+            <ColorPalette />
+          </Accordion>
+        )}
+        {visibleEditors?.fontDetector !== false && (
+          <Accordion title="Fonts">
+            <FontDetector />
+          </Accordion>
+        )}
+        {visibleEditors?.classResolver !== false && (
+          <Accordion title="Class Resolver">
+            <ClassResolver classNames={classNames} />
+          </Accordion>
+        )}
+        {visibleEditors?.responsivePreview !== false && (
+          <Accordion title="Responsive">
+            <ResponsivePreview />
+          </Accordion>
+        )}
+        {visibleEditors?.customCSS !== false && (
+          <Accordion title="Custom CSS">
+            <CustomCSS />
+          </Accordion>
+        )}
         <Accordion title="Export">
           <ExportPanel styles={styles} />
         </Accordion>

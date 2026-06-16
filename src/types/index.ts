@@ -13,6 +13,16 @@ export interface NovaStyleSettings {
     boxModel: boolean
     typography: boolean
     colorPicker: boolean
+    borderEditor: boolean
+    effectsEditor: boolean
+    layoutEditor: boolean
+    flexboxEditor: boolean
+    transformEditor: boolean
+    fontDetector: boolean
+    classResolver: boolean
+    responsivePreview: boolean
+    customCSS: boolean
+    colorPalette: boolean
   }
   useSync?: boolean
   ignoredDomains?: string[]
