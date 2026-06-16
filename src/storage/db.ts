@@ -1,6 +1,60 @@
 import type { StyleMap } from '@/types'
 
 const STORAGE_KEY_PREFIX = 'novastyle_'
+const SETTINGS_KEY = 'novastyle_settings'
+
+export interface NovaStyleSettings {
+  defaultPosition: 'right' | 'left' | 'bottom' | 'top'
+  panelWidth: number
+  theme: 'light' | 'dark'
+  visibleEditors: {
+    classInput: boolean
+    boxModel: boolean
+    typography: boolean
+    colorPicker: boolean
+  }
+}
+
+const defaultSettings: NovaStyleSettings = {
+  defaultPosition: 'right',
+  panelWidth: 320,
+  theme: 'light',
+  visibleEditors: {
+    classInput: true,
+    boxModel: true,
+    typography: true,
+    colorPicker: true,
+  },
+}
+
+export async function getSettings(): Promise<NovaStyleSettings> {
+  try {
+    const result = await chrome.storage.local.get(SETTINGS_KEY)
+    const saved = (result as Record<string, Partial<NovaStyleSettings> | undefined>)[SETTINGS_KEY]
+    if (!saved) return { ...defaultSettings }
+    return {
+      defaultPosition: saved.defaultPosition ?? defaultSettings.defaultPosition,
+      panelWidth: saved.panelWidth ?? defaultSettings.panelWidth,
+      theme: saved.theme ?? defaultSettings.theme,
+      visibleEditors: {
+        classInput: saved.visibleEditors?.classInput ?? defaultSettings.visibleEditors.classInput,
+        boxModel: saved.visibleEditors?.boxModel ?? defaultSettings.visibleEditors.boxModel,
+        typography: saved.visibleEditors?.typography ?? defaultSettings.visibleEditors.typography,
+        colorPicker: saved.visibleEditors?.colorPicker ?? defaultSettings.visibleEditors.colorPicker,
+      },
+    }
+  } catch {
+    return { ...defaultSettings }
+  }
+}
+
+export async function saveSettings(settings: NovaStyleSettings): Promise<void> {
+  try {
+    await chrome.storage.local.set({ [SETTINGS_KEY]: settings })
+  } catch {
+    // storage write failed silently
+  }
+}
 
 export async function getStyles(domain: string): Promise<StyleMap | null> {
   const key = STORAGE_KEY_PREFIX + domain
