@@ -96,3 +96,24 @@
 - [x] **R25**: Fix `buildNthPath` non-null assertion in `selector.ts:33` — replace `!` with local `currentTag` variable
 - [x] **R26**: Improve `sendResponse` catch comment in `service-worker.ts:24`
 - [x] **R27**: Fix `stripCrossorigin` build plugin regex in `build.ts:18` — add `\s+` prefix to match only as attribute
+
+---
+
+## Phase 6: Editor Expansion
+
+- [x] **E1**: Add `layoutEditor`, `flexboxEditor`, `transformEditor` flags to `NovaStyleSettings.visibleEditors`
+- [x] **E2**: Create `LayoutEditor` component — `display`, `position`, `width`/`height`/`min`/`max`, `overflow`, `z-index`, `box-sizing`
+- [x] **E3**: Create `FlexboxEditor` component — `flex-direction`, `flex-wrap`, `justify-content`, `align-items`, `align-content`, `gap`, `flex-grow`/`flex-shrink`
+- [x] **E4**: Create `TransformEditor` component — `rotate`, `scaleX`/`scaleY`, `translateX`/`translateY`, `transform-origin`
+- [x] **E5**: Add `visibleEditors` flags for all 14 accordion sections (not just the original 4)
+- [x] **E6**: Wire new editors into Panel.tsx with accordion sections + conditionals
+- [x] **E7**: Add visibility toggles for all editors in Options → Editor Settings
+- [x] **E8**: Fix build CSS collision — ESM (options) and IIFE (panel) both outputting `style.css`; now produces separate `options.css` + `panel.css`
+
+### Future Editor Ideas
+- [ ] **E9**: Grid editor — `grid-template-columns`, `grid-template-rows`, `grid-column`/`grid-row`, `grid-auto-flow`
+- [ ] **E10**: Background editor — `background-image` (gradients), `background-size`, `background-position`, `background-repeat`
+- [ ] **E11**: Filter editor — `blur()`, `brightness()`, `contrast()`, `grayscale()`, `hue-rotate()`, `saturate()`
+- [ ] **E12**: Text decoration editor — `text-decoration`, `text-transform`, `text-shadow`, `white-space`
+- [ ] **E13**: Outline editor — `outline-width`, `outline-style`, `outline-color`, `outline-offset`
+- [ ] **E14**: Cursor / interaction editor — `cursor`, `pointer-events`, `user-select`, `resize`
