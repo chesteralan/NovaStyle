@@ -1,11 +1,21 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { getAllDomains, getStyles, removeDomainStyles, getSettings, saveSettings, type NovaStyleSettings } from '@/storage/db'
+import {
+  getAllDomainsWithMeta,
+  removeDomainStyles,
+  getSettings,
+  saveSettings,
+  renameDomain,
+  getVersions,
+  revertToVersion,
+  type NovaStyleSettings,
+} from '@/storage/db'
 import type { StyleMap } from '@/types'
 
 interface DomainEntry {
   domain: string
   styles: StyleMap
   expanded: boolean
+  updatedAt: number
 }
 
 function AccordionSection({ title, defaultOpen, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
@@ -30,6 +40,11 @@ export function Options() {
   const [message, setMessage] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedDomains, setSelectedDomains] = useState<Set<string>>(new Set())
+  const [sortBy, setSortBy] = useState<'name-asc' | 'name-desc' | 'edited-desc' | 'edited-asc'>('name-asc')
+  const [renaming, setRenaming] = useState<string | null>(null)
+  const [renameValue, setRenameValue] = useState('')
+  const [showHistoryFor, setShowHistoryFor] = useState<string | null>(null)
+  const [versions, setVersions] = useState<Array<{ styles: StyleMap; timestamp: number }>>([])
   const [settings, setSettings] = useState<NovaStyleSettings>({
     defaultPosition: 'right',
     panelWidth: 320,
@@ -45,14 +60,15 @@ export function Options() {
 
   const load = useCallback(async () => {
     setLoading(true)
-    const [domains, savedSettings] = await Promise.all([getAllDomains(), getSettings()])
-    const results = await Promise.all(
-      domains.map(async (domain) => {
-        const styles = await getStyles(domain)
-        return { domain, styles: styles ?? {}, expanded: false }
-      }),
+    const [domains, savedSettings] = await Promise.all([getAllDomainsWithMeta(), getSettings()])
+    setEntries(
+      domains.map((d) => ({
+        domain: d.domain,
+        styles: d.styles,
+        updatedAt: d.updatedAt,
+        expanded: false,
+      })),
     )
-    setEntries(results)
     setSettings(savedSettings)
     setLoading(false)
   }, [])
@@ -158,6 +174,58 @@ export function Options() {
     if (fileRef.current) fileRef.current.value = ''
   }
 
+  const handleRenameStart = (domain: string) => {
+    setRenaming(domain)
+    setRenameValue(domain)
+  }
+
+  const handleRenameCancel = () => {
+    setRenaming(null)
+    setRenameValue('')
+  }
+
+  const handleRenameSubmit = async (oldDomain: string) => {
+    const newDomain = renameValue.trim()
+    if (!newDomain || newDomain === oldDomain) {
+      setRenaming(null)
+      return
+    }
+    const ok = await renameDomain(oldDomain, newDomain)
+    if (ok) {
+      setEntries((prev) =>
+        prev.map((e) =>
+          e.domain === oldDomain ? { ...e, domain: newDomain } : e,
+        ),
+      )
+      setSelectedDomains((prev) => {
+        const next = new Set(prev)
+        if (next.has(oldDomain)) {
+          next.delete(oldDomain)
+          next.add(newDomain)
+        }
+        return next
+      })
+      showMessage(`Renamed ${oldDomain} → ${newDomain}`)
+    } else {
+      showMessage(`Could not rename — ${newDomain} may already exist`)
+    }
+    setRenaming(null)
+  }
+
+  const handleShowHistory = async (domain: string) => {
+    const v = await getVersions(domain)
+    setVersions(v)
+    setShowHistoryFor(domain)
+  }
+
+  const handleRevert = async (domain: string, index: number) => {
+    await revertToVersion(domain, index)
+    showMessage(`Restored version from ${new Date(versions[index].timestamp).toLocaleString()}`)
+    setShowHistoryFor(null)
+    setVersions([])
+    await load()
+  }
+
   const updateSetting = <K extends keyof NovaStyleSettings>(key: K, value: NovaStyleSettings[K]) => {
     const next = { ...settings, [key]: value }
     setSettings(next)
@@ -193,6 +261,19 @@ export function Options() {
   const filtered = searchQuery
     ? entries.filter((e) => e.domain.toLowerCase().includes(searchQuery.toLowerCase()))
     : entries
+
+  const sorted = [...filtered].sort((a, b) => {
+    switch (sortBy) {
+      case 'name-asc':
+        return a.domain.localeCompare(b.domain)
+      case 'name-desc':
+        return b.domain.localeCompare(a.domain)
+      case 'edited-desc':
+        return b.updatedAt - a.updatedAt
+      case 'edited-asc':
+        return a.updatedAt - b.updatedAt
+    }
+  })
 
   const totalSelectors = entries.reduce(
     (sum, e) => sum + Object.keys(e.styles).length,
@@ -235,7 +316,7 @@ export function Options() {
                   <label className="flex items-center gap-1 text-xs text-slate-500 cursor-pointer shrink-0">
                     <input
                       type="checkbox"
-                      checked={filtered.length > 0 && filtered.every((e) => selectedDomains.has(e.domain))}
+                      checked={sorted.length > 0 && sorted.every((e) => selectedDomains.has(e.domain))}
                       onChange={toggleSelectAll}
                       className="rounded border-slate-300"
                       aria-label="Select all"
@@ -261,8 +342,19 @@ export function Options() {
                       </button>
                     )}
                   </div>
+                  <select
+                    className="text-xs border border-slate-300 rounded-md bg-white px-2 py-1.5 text-slate-600 shrink-0"
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                    aria-label="Sort domains"
+                  >
+                    <option value="name-asc">Name ↑</option>
+                    <option value="name-desc">Name ↓</option>
+                    <option value="edited-desc">Edited ↓</option>
+                    <option value="edited-asc">Edited ↑</option>
+                  </select>
                   <span className="text-xs text-slate-500 shrink-0">
-                    <span className="font-semibold text-slate-700">{filtered.length}</span> / {entries.length} domain(s), <span className="font-semibold text-slate-700">{totalSelectors}</span> selector(s), <span className="font-semibold text-slate-700">{totalProperties}</span> propert(ies)
+                    <span className="font-semibold text-slate-700">{sorted.length}</span> / {entries.length} domain(s), <span className="font-semibold text-slate-700">{totalSelectors}</span> selector(s), <span className="font-semibold text-slate-700">{totalProperties}</span> propert(ies)
                   </span>
                   {selectedDomains.size > 0 && (
                     <button
@@ -275,10 +367,10 @@ export function Options() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  {filtered.length === 0 && searchQuery ? (
+                  {sorted.length === 0 && searchQuery ? (
                     <div className="text-sm text-slate-400 py-4 text-center">No domains match your search.</div>
                   ) : (
-                    filtered.map((entry) => {
+                    sorted.map((entry) => {
                     const selectors = Object.keys(entry.styles)
                     const propCount = selectors.reduce(
                       (s, sel) => s + Object.keys(entry.styles[sel]).length,
@@ -302,12 +394,46 @@ export function Options() {
                             >
                               {entry.expanded ? '▾' : '▸'}
                             </button>
-                            <span className="font-medium text-sm truncate">{entry.domain}</span>
-                            <span className="text-xs text-slate-400 shrink-0">
-                              {selectors.length}s / {propCount}p
-                            </span>
+                            {renaming === entry.domain ? (
+                              <form
+                                className="flex items-center gap-1 min-w-0"
+                                onSubmit={(e) => { e.preventDefault(); handleRenameSubmit(entry.domain) }}
+                              >
+                                <input
+                                  type="text"
+                                  value={renameValue}
+                                  onChange={(e) => setRenameValue(e.target.value)}
+                                  className="flex-1 min-w-0 px-1.5 py-0.5 text-sm border border-blue-400 rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                  autoFocus
+                                  aria-label="New domain name"
+                                />
+                                <button type="submit" className="text-xs text-blue-600 hover:text-blue-800 shrink-0" aria-label="Save rename">✓</button>
+                                <button type="button" className="text-xs text-slate-400 hover:text-slate-600 shrink-0" onClick={handleRenameCancel} aria-label="Cancel rename">✕</button>
+                              </form>
+                            ) : (
+                              <>
+                                <span className="font-medium text-sm truncate">{entry.domain}</span>
+                                <span className="text-xs text-slate-400 shrink-0">
+                                  {selectors.length}s / {propCount}p
+                                </span>
+                              </>
+                            )}
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              className="text-xs text-slate-500 hover:text-slate-700"
+                              onClick={() => handleRenameStart(entry.domain)}
+                              aria-label={`Rename ${entry.domain}`}
+                            >
+                              Rename
+                            </button>
+                            <button
+                              className="text-xs text-slate-500 hover:text-slate-700"
+                              onClick={() => handleShowHistory(entry.domain)}
+                              aria-label={`History for ${entry.domain}`}
+                            >
+                              History
+                            </button>
                             <button
                               className="text-xs text-blue-500 hover:text-blue-700"
                               onClick={() => handleExportDomain(entry.domain, entry.styles)}
@@ -347,6 +473,51 @@ export function Options() {
               </div>
             )}
           </AccordionSection>
+
+          {showHistoryFor && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+              <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4 max-h-[80vh] flex flex-col">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
+                  <span className="font-medium text-sm">History — {showHistoryFor}</span>
+                  <button
+                    className="text-slate-400 hover:text-slate-600 text-sm"
+                    onClick={() => { setShowHistoryFor(null); setVersions([]) }}
+                    aria-label="Close history"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="overflow-y-auto p-4 space-y-2">
+                  {versions.length === 0 ? (
+                    <div className="text-sm text-slate-400 text-center py-4">No previous versions.</div>
+                  ) : (
+                    [...versions].reverse().map((v, i) => {
+                      const idx = versions.length - 1 - i
+                      const selCount = Object.keys(v.styles).length
+                      const propCount = Object.values(v.styles).reduce((s, p) => s + Object.keys(p).length, 0)
+                      return (
+                        <div key={idx} className="flex items-center justify-between border border-slate-200 rounded-md px-3 py-2">
+                          <div className="min-w-0">
+                            <div className="text-xs text-slate-500">
+                              <span className="font-medium text-slate-700">v{idx + 1}</span> — {new Date(v.timestamp).toLocaleString()}
+                            </div>
+                            <div className="text-xs text-slate-400">{selCount} selector(s), {propCount} propert(ies)</div>
+                          </div>
+                          <button
+                            className="text-xs text-blue-600 hover:text-blue-800 shrink-0 ml-2"
+                            onClick={() => handleRevert(showHistoryFor, idx)}
+                            aria-label={`Restore version ${idx + 1}`}
+                          >
+                            Restore
+                          </button>
+                        </div>
+                      )
+                    })
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Panel Settings */}
           <AccordionSection title="Panel Settings">

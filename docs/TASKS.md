@@ -26,9 +26,9 @@
 - [x] Search/filter domains in options page
 - [x] Bulk select and delete domains
 - [x] Export individual domain styles (not just all)
-- [ ] Style history / version snapshots per domain
-- [ ] Rename domains
-- [ ] Sort domains (by name, last edited)
+- [x] Style history / version snapshots per domain
+- [x] Rename domains
+- [x] Sort domains (by name, last edited)
 
 ## Phase 3: Editor Improvements
 
