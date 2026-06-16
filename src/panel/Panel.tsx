@@ -14,6 +14,13 @@ import { FilterEditor } from './components/FilterEditor'
 import { TextDecorationEditor } from './components/TextDecorationEditor'
 import { OutlineEditor } from './components/OutlineEditor'
 import { CursorEditor } from './components/CursorEditor'
+import { AnimationEditor } from './components/AnimationEditor'
+import { ListEditor } from './components/ListEditor'
+import { TableEditor } from './components/TableEditor'
+import { ColumnsEditor } from './components/ColumnsEditor'
+import { ScrollSnapEditor } from './components/ScrollSnapEditor'
+import { SvgEditor } from './components/SvgEditor'
+import { WritingModeEditor } from './components/WritingModeEditor'
 import { FontDetector } from './components/FontDetector'
 import { CustomCSS } from './components/CustomCSS'
 import { ColorPalette } from './components/ColorPalette'
@@ -257,6 +264,41 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
         {visibleEditors?.cursorEditor !== false && (
           <Accordion title="Interaction">
             <CursorEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.animationEditor !== false && (
+          <Accordion title="Animation & Transition">
+            <AnimationEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.listEditor !== false && (
+          <Accordion title="List">
+            <ListEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.tableEditor !== false && (
+          <Accordion title="Table">
+            <TableEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.columnsEditor !== false && (
+          <Accordion title="Columns">
+            <ColumnsEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.scrollSnapEditor !== false && (
+          <Accordion title="Scroll Snap">
+            <ScrollSnapEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.svgEditor !== false && (
+          <Accordion title="SVG">
+            <SvgEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.writingModeEditor !== false && (
+          <Accordion title="Writing Mode">
+            <WritingModeEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
           </Accordion>
         )}
         {visibleEditors?.borderEditor !== false && (

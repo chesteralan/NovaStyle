@@ -24,6 +24,13 @@ export interface NovaStyleSettings {
     textDecorationEditor: boolean
     outlineEditor: boolean
     cursorEditor: boolean
+    animationEditor: boolean
+    listEditor: boolean
+    tableEditor: boolean
+    columnsEditor: boolean
+    scrollSnapEditor: boolean
+    svgEditor: boolean
+    writingModeEditor: boolean
     fontDetector: boolean
     classResolver: boolean
     responsivePreview: boolean
