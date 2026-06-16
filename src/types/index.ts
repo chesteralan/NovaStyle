@@ -18,6 +18,12 @@ export interface NovaStyleSettings {
     layoutEditor: boolean
     flexboxEditor: boolean
     transformEditor: boolean
+    gridEditor: boolean
+    backgroundEditor: boolean
+    filterEditor: boolean
+    textDecorationEditor: boolean
+    outlineEditor: boolean
+    cursorEditor: boolean
     fontDetector: boolean
     classResolver: boolean
     responsivePreview: boolean

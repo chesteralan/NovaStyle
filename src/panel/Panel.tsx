@@ -8,6 +8,12 @@ import { EffectsEditor } from './components/EffectsEditor'
 import { LayoutEditor } from './components/LayoutEditor'
 import { FlexboxEditor } from './components/FlexboxEditor'
 import { TransformEditor } from './components/TransformEditor'
+import { GridEditor } from './components/GridEditor'
+import { BackgroundEditor } from './components/BackgroundEditor'
+import { FilterEditor } from './components/FilterEditor'
+import { TextDecorationEditor } from './components/TextDecorationEditor'
+import { OutlineEditor } from './components/OutlineEditor'
+import { CursorEditor } from './components/CursorEditor'
 import { FontDetector } from './components/FontDetector'
 import { CustomCSS } from './components/CustomCSS'
 import { ColorPalette } from './components/ColorPalette'
@@ -221,6 +227,36 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
         {visibleEditors?.transformEditor !== false && (
           <Accordion title="Transform">
             <TransformEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.gridEditor !== false && (
+          <Accordion title="Grid">
+            <GridEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.backgroundEditor !== false && (
+          <Accordion title="Background">
+            <BackgroundEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.filterEditor !== false && (
+          <Accordion title="Filter">
+            <FilterEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.textDecorationEditor !== false && (
+          <Accordion title="Text Decoration">
+            <TextDecorationEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.outlineEditor !== false && (
+          <Accordion title="Outline">
+            <OutlineEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.cursorEditor !== false && (
+          <Accordion title="Interaction">
+            <CursorEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
           </Accordion>
         )}
         {visibleEditors?.borderEditor !== false && (
