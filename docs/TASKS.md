@@ -96,3 +96,31 @@
 - [x] **R25**: Fix `buildNthPath` non-null assertion in `selector.ts:33` — replace `!` with local `currentTag` variable
 - [x] **R26**: Improve `sendResponse` catch comment in `service-worker.ts:24`
 - [x] **R27**: Fix `stripCrossorigin` build plugin regex in `build.ts:18` — add `\s+` prefix to match only as attribute
+
+---
+
+## Phase 6: Editor Expansion
+
+- [x] **E1**: Add `layoutEditor`, `flexboxEditor`, `transformEditor` flags to `NovaStyleSettings.visibleEditors`
+- [x] **E2**: Create `LayoutEditor` component — `display`, `position`, `width`/`height`/`min`/`max`, `overflow`, `z-index`, `box-sizing`
+- [x] **E3**: Create `FlexboxEditor` component — `flex-direction`, `flex-wrap`, `justify-content`, `align-items`, `align-content`, `gap`, `flex-grow`/`flex-shrink`
+- [x] **E4**: Create `TransformEditor` component — `rotate`, `scaleX`/`scaleY`, `translateX`/`translateY`, `transform-origin`
+- [x] **E5**: Add `visibleEditors` flags for all 14 accordion sections (not just the original 4)
+- [x] **E6**: Wire new editors into Panel.tsx with accordion sections + conditionals
+- [x] **E7**: Add visibility toggles for all editors in Options → Editor Settings
+- [x] **E8**: Fix build CSS collision — ESM (options) and IIFE (panel) both outputting `style.css`; now produces separate `options.css` + `panel.css`
+- [x] **E9**: Create `GridEditor` — `grid-template-columns`/`rows`, `column-gap`/`row-gap`, `grid-auto-flow`, `justify-items`/`align-items`, `place-items`
+- [x] **E10**: Create `BackgroundEditor` — `background-image`, `background-size`, `background-repeat`, `background-position`, `background-attachment`, `background-clip`/`origin`
+- [x] **E11**: Create `FilterEditor` — 9 sliders for `blur`, `brightness`, `contrast`, `grayscale`, `sepia`, `hue-rotate`, `saturate`, `invert`, `opacity`
+- [x] **E12**: Create `TextDecorationEditor` — `text-decoration-line`/`style`/`color`, `text-transform`, `text-shadow`, `white-space`, `word-break`
+- [x] **E13**: Create `OutlineEditor` — `outline-width`, `outline-style`, `outline-color` (with color picker), `outline-offset`
+- [x] **E14**: Create `CursorEditor` — `cursor`, `pointer-events`, `user-select`, `resize`, `visibility`, `float`, `object-fit`, `object-position`
+
+### Future Editor Ideas
+- [ ] **E15**: Animation/Transition editor — `transition-property`, `transition-duration`, `transition-timing-function`, `animation`
+- [ ] **E16**: List editor — `list-style-type`, `list-style-position`, `list-style-image`
+- [ ] **E17**: Table editor — `border-collapse`, `border-spacing`, `table-layout`, `caption-side`
+- [ ] **E18**: Columns editor — `column-count`, `column-width`, `column-gap`, `column-rule`
+- [ ] **E19**: Scroll Snap editor — `scroll-snap-type`, `scroll-snap-align`, `scroll-margin`/`scroll-padding`
+- [ ] **E20**: SVG editor — `fill`, `stroke`, `stroke-width`, `stroke-dasharray`
+- [ ] **E21**: Writing mode / direction editor — `writing-mode`, `direction`, `text-orientation`
