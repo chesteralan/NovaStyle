@@ -12,9 +12,11 @@ interface AppProps {
 
 export function App({ selector: initialSelector, initialStyles, initialClasses, settings }: AppProps) {
   const [currentSelector, setCurrentSelector] = useState(initialSelector)
-  const store = useStyleStore()
+  const styles = useStyleStore((s) => s.styles)
+  const classNames = useStyleStore((s) => s.classNames)
 
   useEffect(() => {
+    const store = useStyleStore.getState()
     if (initialStyles && Object.keys(initialStyles).length > 0) {
       store.setStyles(initialStyles)
     } else if (initialSelector) {
@@ -33,6 +35,7 @@ export function App({ selector: initialSelector, initialStyles, initialClasses, 
     const handler = ((e: Event) => {
       const { selector: sel, styles, classes } = (e as CustomEvent).detail as { selector: string; styles: StyleMap; classes?: string[] }
       setCurrentSelector(sel)
+      const store = useStyleStore.getState()
       store.setStyles(styles)
       if (classes) store.setClassNames(classes)
     }) as EventListener
@@ -57,34 +60,34 @@ export function App({ selector: initialSelector, initialStyles, initialClasses, 
   }, [])
 
   const onUpdate = useCallback((sel: string, prop: string, val: string) => {
-    store.updateStyle(sel, prop, val)
-  }, [store])
+    useStyleStore.getState().updateStyle(sel, prop, val)
+  }, [])
 
   const onUndo = useCallback(() => {
-    store.undo()
-  }, [store])
+    useStyleStore.getState().undo()
+  }, [])
 
   const onRedo = useCallback(() => {
-    store.redo()
-  }, [store])
+    useStyleStore.getState().redo()
+  }, [])
 
   const onClose = useCallback(() => {
     window.dispatchEvent(new CustomEvent('novastyle:close'))
   }, [])
 
   const onAddClass = useCallback((cls: string) => {
-    store.addClass(cls)
-  }, [store])
+    useStyleStore.getState().addClass(cls)
+  }, [])
 
   const onRemoveClass = useCallback((cls: string) => {
-    store.removeClass(cls)
-  }, [store])
+    useStyleStore.getState().removeClass(cls)
+  }, [])
 
   return (
     <Panel
       selector={currentSelector}
-      styles={store.styles}
-      classNames={store.classNames}
+      styles={styles}
+      classNames={classNames}
       onUpdate={onUpdate}
       onClose={onClose}
       onUndo={onUndo}

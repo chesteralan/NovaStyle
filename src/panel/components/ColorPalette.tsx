@@ -5,13 +5,17 @@ interface ColorInfo {
   count: number
 }
 
+const MAX_ELEMENTS = 2000
+
 export function ColorPalette() {
   const [colors, setColors] = useState<ColorInfo[]>([])
 
   useEffect(() => {
-    const el = document.body.querySelectorAll('*')
+    const all = document.body.querySelectorAll('*')
+    const limit = Math.min(all.length, MAX_ELEMENTS)
     const map = new Map<string, number>()
-    for (const e of el) {
+    for (let i = 0; i < limit; i++) {
+      const e = all[i]
       const style = getComputedStyle(e)
       const props = ['color', 'background-color', 'border-color', 'background']
       for (const prop of props) {

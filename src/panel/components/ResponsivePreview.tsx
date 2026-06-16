@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 const PRESETS = [
   { label: 'Desktop', width: 1440, height: 900 },
@@ -11,9 +11,21 @@ export function ResponsivePreview() {
   const [active, setActive] = useState(false)
   const [vp, setVp] = useState(PRESETS[0])
   const [customWidth, setCustomWidth] = useState(PRESETS[0].width.toString())
+  const originalViewportRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    originalViewportRef.current =
+      document.querySelector<HTMLMetaElement>('meta[name="viewport"]')?.content ?? null
+    return () => {
+      const meta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]')
+      if (meta) {
+        meta.content = originalViewportRef.current ?? 'width=device-width, initial-scale=1'
+      }
+    }
+  }, [])
 
   const apply = (w: number) => {
-    let meta = document.querySelector('meta[name="viewport"]') as HTMLMetaElement | null
+    let meta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]')
     if (!meta) {
       meta = document.createElement('meta')
       meta.name = 'viewport'
@@ -25,8 +37,8 @@ export function ResponsivePreview() {
   }
 
   const reset = () => {
-    const meta = document.querySelector('meta[name="viewport"]') as HTMLMetaElement | null
-    if (meta) meta.content = 'width=device-width, initial-scale=1'
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]')
+    if (meta) meta.content = originalViewportRef.current ?? 'width=device-width, initial-scale=1'
     setActive(false)
   }
 

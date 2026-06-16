@@ -20,7 +20,7 @@ chrome.action.onClicked.addListener(async (tab: chrome.tabs.Tab) => {
   })
 
   chrome.tabs.sendMessage(tabId, { type: 'TOGGLE_EXTENSION', state: next }).catch(() => {
-    // content script not ready yet
+    // tab may have been closed before message delivered
   })
 })
 
@@ -36,5 +36,6 @@ chrome.runtime.onMessage.addListener((message: unknown, _sender: chrome.runtime.
     chrome.storage.local.set({
       [msg.domain]: { styles: msg.styles, updatedAt: Date.now() },
     })
+    return
   }
 })

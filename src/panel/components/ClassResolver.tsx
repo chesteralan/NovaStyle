@@ -15,10 +15,9 @@ interface ClassResolverProps {
 export function ClassResolver({ classNames }: ClassResolverProps) {
   const resolved = useMemo(() => {
     if (classNames.length === 0) return []
+    const el = document.createElement('div')
     const entries = classNames.map((cls) => {
-      const el = document.createElement('div')
       el.className = cls
-      document.body.appendChild(el)
       const style = getComputedStyle(el)
       const props: Record<string, string> = {}
       for (const prop of COMMON_PROPS) {
@@ -27,7 +26,6 @@ export function ClassResolver({ classNames }: ClassResolverProps) {
           props[prop] = val
         }
       }
-      document.body.removeChild(el)
       return { className: cls, props }
     })
     return entries.filter((e) => Object.keys(e.props).length > 0)

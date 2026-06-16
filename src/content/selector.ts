@@ -6,7 +6,7 @@ export function computeSelector(el: Element): string {
   if (el.id) return `#${CSS.escape(el.id)}`
 
   const classes = Array.from(el.classList).filter(
-    (c) => !/^[a-z]{2,}-\d+/.test(c),
+    (c) => !/^[a-z]+-[a-z0-9]{8,}$/i.test(c) && !/^css-[a-z0-9]{5,}$/i.test(c),
   )
   if (classes.length > 0) {
     const unique = classes.find(
@@ -28,9 +28,10 @@ function buildNthPath(el: Element): string {
   let current: Element | null = el
   while (current && current !== document.body && current.parentElement) {
     const tag = current.tagName.toLowerCase()
+    const currentTag = current.tagName
     const parent: HTMLElement = current.parentElement
     const siblings = (Array.from(parent.children) as Element[]).filter(
-      (s) => s.tagName === current!.tagName,
+      (s) => s.tagName === currentTag,
     )
     if (siblings.length > 1) {
       const index = siblings.indexOf(current) + 1

@@ -11,6 +11,8 @@ import { ColorPalette } from './components/ColorPalette'
 import { ResponsivePreview } from './components/ResponsivePreview'
 import { ClassResolver } from './components/ClassResolver'
 import { ExportPanel } from './components/ExportPanel'
+import { ErrorBoundary } from './components/ErrorBoundary'
+import { Accordion } from '@/components/Accordion'
 import type { StyleMap, NovaStyleSettings } from '@/types'
 
 type PanelPosition = 'right' | 'left' | 'bottom' | 'top'
@@ -44,22 +46,6 @@ interface PanelProps {
   defaultPosition?: PanelPosition
   visibleEditors?: NovaStyleSettings['visibleEditors']
   theme?: NovaStyleSettings['theme']
-}
-
-function Accordion({ title, defaultOpen, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
-  const [open, setOpen] = useState(defaultOpen ?? false)
-  return (
-    <div className="border border-slate-200 rounded-lg overflow-hidden">
-      <button
-        className="w-full flex items-center justify-between px-3 py-2 text-left hover:bg-slate-50"
-        onClick={() => setOpen(!open)}
-      >
-        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{title}</span>
-        <span className="text-slate-400 text-xs select-none">{open ? '▾' : '▸'}</span>
-      </button>
-      {open && <div className="border-t border-slate-100 p-3">{children}</div>}
-    </div>
-  )
 }
 
 export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo, onRedo, onAddClass, onRemoveClass, defaultPosition, visibleEditors, theme }: PanelProps) {
@@ -198,6 +184,7 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        <ErrorBoundary>
         {visibleEditors?.classInput !== false && (
           <Accordion title="Classes">
             <ClassInput classes={classNames} onAdd={onAddClass} onRemove={onRemoveClass} />
@@ -205,33 +192,30 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
         )}
         {visibleEditors?.boxModel !== false && (
           <Accordion title="Spacing">
-            <BoxModel selector={selector} onUpdate={onUpdate} />
+            <BoxModel selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
           </Accordion>
         )}
         {visibleEditors?.typography !== false && (
           <Accordion title="Typography">
-            <Typography selector={selector} onUpdate={onUpdate} />
+            <Typography selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
           </Accordion>
         )}
         {visibleEditors?.colorPicker !== false && (
           <Accordion title="Colors">
-            <ColorPicker selector={selector} onUpdate={onUpdate} />
+            <ColorPicker selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
           </Accordion>
         )}
         <Accordion title="Palette">
           <ColorPalette />
         </Accordion>
         <Accordion title="Border">
-          <BorderEditor selector={selector} onUpdate={onUpdate} />
+          <BorderEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
         </Accordion>
         <Accordion title="Effects">
           <EffectsEditor selector={selector} onUpdate={onUpdate} />
         </Accordion>
         <Accordion title="Fonts">
           <FontDetector />
-        </Accordion>
-        <Accordion title="Palette">
-          <ColorPalette />
         </Accordion>
         <Accordion title="Class Resolver">
           <ClassResolver classNames={classNames} />
@@ -245,6 +229,7 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
         <Accordion title="Export">
           <ExportPanel styles={styles} />
         </Accordion>
+        </ErrorBoundary>
       </div>
     </div>
   )

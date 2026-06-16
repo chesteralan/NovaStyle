@@ -8,7 +8,6 @@
 ---
 
 ## Phase 1: Polish & UX
-
 - [x] Move button to cycle panel position (right → left → bottom → top)
 - [x] Extension icons (16, 32, 48, 128)
 - [x] Options page with accordion sections
@@ -22,7 +21,6 @@
 - [x] Persist visible editors preference
 
 ## Phase 2: Style Management
-
 - [x] Search/filter domains in options page
 - [x] Bulk select and delete domains
 - [x] Export individual domain styles (not just all)
@@ -31,18 +29,16 @@
 - [x] Sort domains (by name, last edited)
 
 ## Phase 3: Editor Improvements
-
 - [x] Undo/redo keyboard shortcuts (Ctrl+Z / Ctrl+Shift+Z)
 - [x] Escape key to close panel
 - [x] Dark mode for panel UI
 - [x] Font detection — list all fonts used on page
 - [x] Custom CSS injection (user-defined overrides unrelated to selected elements)
-- [ ] CSS animation / transition editor
-- [ ] Grid layout helper
+- [x] CSS animation / transition editor
+- [x] Grid layout helper
 - [x] Responsive preview mode toggle
 
 ## Phase 4: Advanced Features
-
 - [x] Sync via `chrome.storage.sync` (cross-device)
 - [x] Preset themes (e.g., "dark reader", "high contrast", "sepia")
 - [x] Per-domain enable/disable toggle
@@ -50,13 +46,53 @@
 - [x] Inline style extraction (pull existing inline styles into editor)
 - [x] Class-to-style resolution (display computed styles for Tailwind classes)
 - [x] Keyboard shortcut configuration UI
-- [ ] Export as Chrome extension / bookmarklet
+- [x] Export as Chrome extension / bookmarklet
 
 ## Phase 5: CI & DX
+- [x] GitHub Actions CI (lint, typecheck, test, build, bundle size, Sentry sourcemaps)
+- [x] Add E2E tests with Playwright (config + extension-loading specs)
+- [x] Add bundle size monitoring (`scripts/check-size.mjs`)
+- [x] Add error tracking / Sentry integration (`src/lib/sentry.ts`)
+- [x] Add contribution guidelines (CONTRIBUTING.md)
+- [x] Create Chrome Web Store listing assets
+- [x] ErrorBoundary wrapping panel accordion content
+- [x] E2E tests: full panel interaction flow (panel-flow.spec.ts)
+- [x] E2E tests: options page CRUD operations (options-crud.spec.ts)
+- [x] Bundle size CI gate (fail build if limit exceeded)
 
-- [x] GitHub Actions CI (lint, typecheck, test, build)
-- [ ] Add E2E tests with Playwright
-- [ ] Add bundle size monitoring
-- [ ] Add error tracking / Sentry integration
-- [ ] Add contribution guidelines (CONTRIBUTING.md)
-- [ ] Create Chrome Web Store listing assets
+---
+
+## Phase R: Refactor & Code Audit
+
+### High Priority
+- [x] **R1**: Fix duplicate `<Accordion title="Palette">` in `Panel.tsx:221,233` — renders `ColorPalette` twice, doubling DOM queries
+- [x] **R2**: Fix Tailwind class filter regex in `selector.ts:8` — `/^[a-z]{2,}-\d+/` incorrectly filters `flex-1`, `p-4`, `text-sm`, `gap-2`, etc.
+- [x] **R3**: Fix CustomCSS module-level singleton leak in `CustomCSS.tsx:3` — stale `<style>` persists when panel remounts; use ref + cleanup
+- [x] **R4**: Fix event listener leak in `content-script.ts:99-108` — `novastyle:update`/`novastyle:update-classes` listeners never removed in `closePanel()`, accumulating on each open
+- [x] **R5**: Replace DOM manipulation in `ClassResolver.tsx:19-31` `useMemo` with offscreen element (no `document.body.appendChild`)
+- [x] **R6**: Fix EffectsEditor shadow state race in `EffectsEditor.tsx:53` — `setShadowX` hasn't flushed when `updateShadow` reads `shadowX`; pass new value directly
+- [x] **R7**: Extract shared `Accordion` component from Panel/Options into `src/components/Accordion.tsx`
+
+### Medium Priority
+- [x] **R8**: Replace Zustand full-store subscription in `App.tsx:15` with selectors/`useShallow` to avoid unnecessary re-renders
+- [x] **R9**: Add unit-aware input handling in `Typography.tsx:53` / `BoxModel.tsx:23` / `BorderEditor.tsx:19` — only append `px` when value is purely numeric
+- [-] **R10**: Fix `computeSelector` empty-id edge case in `selector.ts:6` — `el.id` being falsy (`""`) already skips the branch correctly; no fix needed
+- [-] **R11**: Extract `defaultSettings` to shared export from `db.ts` — `Options.tsx` doesn't duplicate it; no fix needed
+- [x] **R12**: Add `chrome.storage.sync` mock to `src/test/setup.ts` — split into `__localStore`/`__syncStore` with proper typing
+- [x] **R13**: Wrap `filtered` computation in `ClassInput.tsx:16` in `useMemo` for performance
+- [x] **R14**: Sanitize custom CSS input in `CustomCSS.tsx:21` — strip `javascript:` / `expression()` patterns
+- [-] **R15**: Fix `getStyles`/`saveStyles` storage area inconsistency in `db.ts` — inactive code path (sync disabled by default); `getStyles` reads from local first, then sync as fallback per design
+- [x] **R16**: Add `aria-expanded` to accordion toggle buttons in Panel and Options
+
+### Low Priority
+- [-] **R17**: Fix trailing space in dark mode className in `Panel.tsx:161` — template `? ' dark' : ''` does not produce trailing space; no bug
+- [x] **R18**: Remove unnecessary optional chaining on `window.location?.hostname` in `ExportPanel.tsx:13`
+- [x] **R19**: Add `value` bindings to all editor inputs — BoxModel (12 inputs), Typography (4 inputs + 1 select), ColorPicker (4 inputs), BorderEditor (3 inputs + 1 select) display current style values
+- [x] **R20**: Extract shared `@theme inline` CSS block from `panel.css` and `Options.css` into `src/styles/shared.css`
+- [x] **R21**: Replace generic `any` in test setup (`src/test/setup.ts:3`) with `Record<string, unknown>` + separate local/sync stores
+- [x] **R22**: Save/restore original `<meta viewport>` — useRef stores original, useEffect cleanup restores on unmount
+- [x] **R23**: Add explicit `return` in service worker `onMessage` SAVE_STYLES handler for consistency (`service-worker.ts`)
+- [x] **R24**: Throttle DOM queries — FontDetector + ColorPalette limit to first 2000 elements
+- [x] **R25**: Fix `buildNthPath` non-null assertion in `selector.ts:33` — replace `!` with local `currentTag` variable
+- [x] **R26**: Improve `sendResponse` catch comment in `service-worker.ts:24`
+- [x] **R27**: Fix `stripCrossorigin` build plugin regex in `build.ts:18` — add `\s+` prefix to match only as attribute

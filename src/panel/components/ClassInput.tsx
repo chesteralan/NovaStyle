@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { TAILWIND_CLASSES } from '../data/tailwindClasses'
 
 interface ClassInputProps {
@@ -13,11 +13,14 @@ export function ClassInput({ classes, onAdd, onRemove }: ClassInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
 
-  const filtered = input.trim()
-    ? TAILWIND_CLASSES.filter(
-        (c) => c.includes(input.trim()) && !classes.includes(c),
-      ).slice(0, 20)
-    : []
+  const filtered = useMemo(() => {
+    const q = input.trim()
+    return q
+      ? TAILWIND_CLASSES.filter(
+          (c) => c.includes(q) && !classes.includes(c),
+        ).slice(0, 20)
+      : []
+  }, [input, classes])
 
   useEffect(() => {
     setFocusedIndex(-1)

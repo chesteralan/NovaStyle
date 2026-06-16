@@ -15,7 +15,7 @@ function stripCrossorigin(): import('vite').Plugin {
     enforce: 'post',
     transform(code: string, id: string) {
       if (!id.endsWith('.html')) return
-      return code.replace(/crossorigin\b[^>]*>/g, '>').replace(/rel="modulepreload"[^>]*>/g, '>')
+      return code.replace(/\s+crossorigin\b[^>]*>/g, '>').replace(/\s+rel="modulepreload"[^>]*>/g, '>')
     },
   }
 }
