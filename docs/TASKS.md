@@ -14,6 +14,9 @@
 - [x] Options page with accordion sections
 - [x] Settings storage and UI (default position, panel width, theme, visible editors)
 - [x] Accordion sections in editor panel (Classes, Spacing, Typography, Colors, Export)
+- [x] Panel accordion: collapsed by default
+- [x] New accordion sections: Border, Effects
+- [x] Floating/draggable panel toggle (drag anywhere on the page)
 - [ ] Persist panel position preference to storage and apply on open
 - [ ] Persist theme preference and apply to panel
 - [ ] Persist visible editors preference
