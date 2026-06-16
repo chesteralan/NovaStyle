@@ -27,7 +27,7 @@ const resolveAlias = {
 const basePlugins = [react(), tailwindcss()]
 
 async function main() {
-  console.log('Building ESM entries (options, content-script, service-worker)...')
+  console.log('Building ESM entries (options, service-worker)...')
   await build({
     resolve: resolveAlias,
     plugins: [...basePlugins, stripCrossorigin()],
@@ -37,7 +37,6 @@ async function main() {
       rollupOptions: {
         input: {
           options: resolve(__dirname, 'options.html'),
-          'content-script': resolve(__dirname, 'src/content/content-script.ts'),
           'service-worker': resolve(__dirname, 'src/background/service-worker.ts'),
         },
         output: {
@@ -48,6 +47,27 @@ async function main() {
       },
       outDir: 'dist',
       emptyOutDir: true,
+    },
+  } satisfies UserConfig)
+
+  console.log('Building content-script as IIFE...')
+  await build({
+    resolve: resolveAlias,
+    plugins: basePlugins,
+    build: {
+      cssCodeSplit: false,
+      rollupOptions: {
+        input: {
+          'content-script': resolve(__dirname, 'src/content/content-script.ts'),
+        },
+        output: {
+          entryFileNames: 'assets/[name].js',
+          assetFileNames: 'assets/[name][extname]',
+          format: 'iife',
+        },
+      },
+      outDir: 'dist',
+      emptyOutDir: false,
     },
   } satisfies UserConfig)
 

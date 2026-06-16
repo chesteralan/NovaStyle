@@ -1,12 +1,20 @@
 import { createHighlighter, drawHighlighter, hideHighlighter, destroyHighlighter, type HighlighterState } from './highlighter'
 import { computeSelector, extractStyles } from './selector'
 import { updateStylesheet, clearStylesheet } from './injector'
+import { getSettings, saveStyles } from '@/storage/db'
 import type { ContentMessage } from '@/types'
 
-async function saveStyles(domain: string, styles: Record<string, Record<string, string>>): Promise<void> {
-  const key = 'novastyle_' + domain
-  try { await chrome.storage.local.set({ [key]: { styles, updatedAt: Date.now() } }) } catch { /* noop */ }
-}
+const CURRENT_DOMAIN = window.location.hostname.replace(/^www\./, '')
+
+getSettings().then((settings) => {
+  if ((settings.ignoredDomains ?? []).includes(CURRENT_DOMAIN)) return
+  chrome.storage.local.get(CURRENT_DOMAIN).then((result: unknown) => {
+    const data = (result as Record<string, { styles?: Record<string, Record<string, string>> } | undefined>)[CURRENT_DOMAIN]
+    if (data?.styles) {
+      updateStylesheet(data.styles)
+    }
+  })
+})
 
 let highlighter: HighlighterState | null = null
 let active = false
@@ -48,11 +56,11 @@ function onClick(e: MouseEvent) {
       detail: { selector, styles, classes },
     }))
   } else {
-    openPanel(selector, styles)
+    openPanel(selector, styles).catch(() => {})
   }
 }
 
-function openPanel(selector: string, styles: Record<string, Record<string, string>>) {
+async function openPanel(selector: string, styles: Record<string, Record<string, string>>) {
   if (document.getElementById('novastyle-root')) return
   const container = document.createElement('div')
   container.id = 'novastyle-root'
@@ -76,6 +84,9 @@ function openPanel(selector: string, styles: Record<string, Record<string, strin
   shadow.appendChild(cssLink)
 
   const domain = window.location.hostname.replace(/^www\./, '')
+
+  const settings = await getSettings()
+  mountPoint.dataset.novastyleSettings = JSON.stringify(settings)
 
   const mainScript = document.createElement('script')
   mainScript.src = chrome.runtime.getURL('assets/panel.js')
@@ -132,13 +143,5 @@ chrome.runtime.onMessage.addListener((message: unknown) => {
   if (msg.type === 'TOGGLE_EXTENSION') {
     if (msg.state === 'active') activate()
     else deactivate()
-  }
-})
-
-const domain = window.location.hostname.replace(/^www\./, '')
-chrome.storage.local.get(domain).then((result: unknown) => {
-  const data = (result as Record<string, { styles?: Record<string, Record<string, string>> } | undefined>)[domain]
-  if (data?.styles) {
-    updateStylesheet(data.styles)
   }
 })

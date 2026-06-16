@@ -4,6 +4,20 @@ export interface StyleMap {
   }
 }
 
+export interface NovaStyleSettings {
+  defaultPosition: 'right' | 'left' | 'bottom' | 'top'
+  panelWidth: number
+  theme: 'light' | 'dark'
+  visibleEditors: {
+    classInput: boolean
+    boxModel: boolean
+    typography: boolean
+    colorPicker: boolean
+  }
+  useSync?: boolean
+  ignoredDomains?: string[]
+}
+
 export type ExtensionToggleMessage = {
   type: 'TOGGLE_EXTENSION'
   state: 'active' | 'inactive'
