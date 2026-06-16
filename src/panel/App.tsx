@@ -60,6 +60,14 @@ export function App({ selector: initialSelector, initialStyles, initialClasses, 
     store.updateStyle(sel, prop, val)
   }, [store])
 
+  const onUndo = useCallback(() => {
+    store.undo()
+  }, [store])
+
+  const onRedo = useCallback(() => {
+    store.redo()
+  }, [store])
+
   const onClose = useCallback(() => {
     window.dispatchEvent(new CustomEvent('novastyle:close'))
   }, [])
@@ -79,10 +87,13 @@ export function App({ selector: initialSelector, initialStyles, initialClasses, 
       classNames={store.classNames}
       onUpdate={onUpdate}
       onClose={onClose}
+      onUndo={onUndo}
+      onRedo={onRedo}
       onAddClass={onAddClass}
       onRemoveClass={onRemoveClass}
       defaultPosition={settings?.defaultPosition}
       visibleEditors={settings?.visibleEditors}
+      theme={settings?.theme}
     />
   )
 }

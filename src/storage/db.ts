@@ -27,6 +27,20 @@ const defaultSettings: NovaStyleSettings = {
     typography: true,
     colorPicker: true,
   },
+  useSync: false,
+  ignoredDomains: [],
+}
+
+function storageArea(useSync?: boolean): chrome.storage.StorageArea {
+  return useSync ? chrome.storage.sync : chrome.storage.local
+}
+
+function domainKey(domain: string): string {
+  return STORAGE_KEY_PREFIX + domain
+}
+
+function enabledKey(domain: string): string {
+  return STORAGE_KEY_PREFIX + domain + '_enabled'
 }
 
 export async function getSettings(): Promise<NovaStyleSettings> {
@@ -44,6 +58,8 @@ export async function getSettings(): Promise<NovaStyleSettings> {
         typography: saved.visibleEditors?.typography ?? defaultSettings.visibleEditors.typography,
         colorPicker: saved.visibleEditors?.colorPicker ?? defaultSettings.visibleEditors.colorPicker,
       },
+      useSync: saved.useSync ?? defaultSettings.useSync,
+      ignoredDomains: saved.ignoredDomains ?? defaultSettings.ignoredDomains,
     }
   } catch {
     return { ...defaultSettings }
@@ -59,9 +75,10 @@ export async function saveSettings(settings: NovaStyleSettings): Promise<void> {
 }
 
 export async function getStyles(domain: string): Promise<StyleMap | null> {
-  const key = STORAGE_KEY_PREFIX + domain
+  const key = domainKey(domain)
   try {
-    const result = await chrome.storage.local.get(key)
+    const area = await getSettings()
+    const result = await storageArea(area.useSync).get(key)
     return (result as Record<string, { styles: StyleMap } | undefined>)[key]?.styles ?? null
   } catch {
     return null
@@ -69,7 +86,7 @@ export async function getStyles(domain: string): Promise<StyleMap | null> {
 }
 
 export async function saveStyles(domain: string, styles: StyleMap): Promise<void> {
-  const key = STORAGE_KEY_PREFIX + domain
+  const key = domainKey(domain)
   try {
     const existing = await chrome.storage.local.get(key)
     const existingData = (existing as Record<string, StoredData | undefined>)[key]
@@ -78,20 +95,52 @@ export async function saveStyles(domain: string, styles: StyleMap): Promise<void
       versions.push({ styles: existingData.styles, timestamp: existingData.updatedAt })
     }
     if (versions.length > 20) versions.splice(0, versions.length - 20)
-    await chrome.storage.local.set({
-      [key]: { styles, updatedAt: Date.now(), versions },
-    } satisfies Record<string, StoredData>)
+    const data = { styles, updatedAt: Date.now(), versions }
+    await chrome.storage.local.set({ [key]: data } satisfies Record<string, StoredData>)
+    const settings = await getSettings()
+    if (settings.useSync) {
+      await chrome.storage.sync.set({ [key]: { styles, updatedAt: Date.now() } })
+    }
   } catch {
     // storage write failed silently
   }
 }
 
 export async function removeDomainStyles(domain: string): Promise<void> {
-  const key = STORAGE_KEY_PREFIX + domain
+  const key = domainKey(domain)
   try {
     await chrome.storage.local.remove(key)
+    await chrome.storage.sync.remove(key)
   } catch {
     // storage remove failed silently
+  }
+}
+
+export async function isDomainEnabled(domain: string): Promise<boolean> {
+  try {
+    const key = enabledKey(domain)
+    const result = await chrome.storage.local.get(key)
+    const val = (result as Record<string, boolean | undefined>)[key]
+    return val !== false
+  } catch {
+    return true
+  }
+}
+
+export async function setDomainEnabled(domain: string, enabled: boolean): Promise<void> {
+  try {
+    await chrome.storage.local.set({ [enabledKey(domain)]: enabled })
+  } catch {
+    // silent
+  }
+}
+
+export async function isDomainIgnored(domain: string): Promise<boolean> {
+  try {
+    const settings = await getSettings()
+    return (settings.ignoredDomains ?? []).includes(domain)
+  } catch {
+    return false
   }
 }
 

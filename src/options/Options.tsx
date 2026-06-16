@@ -55,6 +55,8 @@ export function Options() {
       typography: true,
       colorPicker: true,
     },
+    useSync: false,
+    ignoredDomains: [],
   })
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -252,6 +254,8 @@ export function Options() {
         typography: true,
         colorPicker: true,
       },
+      useSync: false,
+      ignoredDomains: [],
     }
     setSettings(defaults)
     saveSettings(defaults)
@@ -595,6 +599,16 @@ export function Options() {
             </div>
           </AccordionSection>
 
+          {/* Shortcuts */}
+          <AccordionSection title="Shortcuts">
+            <div className="space-y-2 text-xs text-slate-600">
+              <div className="flex justify-between"><kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">Esc</kbd><span>Close panel</span></div>
+              <div className="flex justify-between"><kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">⌘Z / Ctrl+Z</kbd><span>Undo</span></div>
+              <div className="flex justify-between"><kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">⌘⇧Z / Ctrl+Shift+Z</kbd><span>Redo</span></div>
+              <div className="flex justify-between"><kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">⌘Y / Ctrl+Y</kbd><span>Redo (alternate)</span></div>
+            </div>
+          </AccordionSection>
+
           {/* Export / Import */}
           <AccordionSection title="Export / Import">
             <div className="flex items-center gap-3">
@@ -627,6 +641,35 @@ export function Options() {
           <AccordionSection title="Advanced">
             <div className="space-y-3">
               <div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.useSync ?? false}
+                    onChange={(e) => updateSetting('useSync', e.target.checked)}
+                    className="rounded border-slate-300"
+                  />
+                  <span className="text-sm text-slate-700">Sync via chrome.storage.sync</span>
+                </label>
+                <p className="text-xs text-slate-400 mt-1 ml-6">Cross-device sync for saved styles.</p>
+              </div>
+              <div className="border-t border-slate-100 pt-3">
+                <label className="block text-xs font-medium text-slate-700 mb-1.5">
+                  Ignored Domains (comma-separated)
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-md bg-white"
+                  value={(settings.ignoredDomains ?? []).join(', ')}
+                  onChange={(e) => {
+                    const list = e.target.value.split(',').map((s) => s.trim()).filter(Boolean)
+                    updateSetting('ignoredDomains', list)
+                  }}
+                  placeholder="example.com, test.org"
+                  aria-label="Ignored domains"
+                />
+                <p className="text-xs text-slate-400 mt-1">Extension will be inactive on these domains.</p>
+              </div>
+              <div className="border-t border-slate-100 pt-3">
                 <p className="text-xs text-slate-500 mb-2">Reset all settings to their default values.</p>
                 <button
                   className="px-3 py-1.5 text-sm bg-yellow-50 border border-yellow-200 text-yellow-700 rounded hover:bg-yellow-100"

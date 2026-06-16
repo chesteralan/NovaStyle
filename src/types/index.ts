@@ -14,6 +14,8 @@ export interface NovaStyleSettings {
     typography: boolean
     colorPicker: boolean
   }
+  useSync?: boolean
+  ignoredDomains?: string[]
 }
 
 export type ExtensionToggleMessage = {

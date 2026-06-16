@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "NovaStyle",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Visually edit any webpage's CSS — spacing, typography, colors, and layout.",
   "permissions": ["storage", "activeTab"],
   "host_permissions": ["<all_urls>"],

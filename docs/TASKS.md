@@ -32,30 +32,30 @@
 
 ## Phase 3: Editor Improvements
 
-- [ ] Undo/redo keyboard shortcuts (Ctrl+Z / Ctrl+Shift+Z)
-- [ ] Escape key to close panel
-- [ ] Dark mode for panel UI
-- [ ] Font detection — list all fonts used on page
-- [ ] Custom CSS injection (user-defined overrides unrelated to selected elements)
+- [x] Undo/redo keyboard shortcuts (Ctrl+Z / Ctrl+Shift+Z)
+- [x] Escape key to close panel
+- [x] Dark mode for panel UI
+- [x] Font detection — list all fonts used on page
+- [x] Custom CSS injection (user-defined overrides unrelated to selected elements)
 - [ ] CSS animation / transition editor
 - [ ] Grid layout helper
-- [ ] Color palette extraction from page
+- [x] Color palette extraction from page
 - [ ] Responsive preview mode toggle
 
 ## Phase 4: Advanced Features
 
-- [ ] Sync via `chrome.storage.sync` (cross-device)
+- [x] Sync via `chrome.storage.sync` (cross-device)
 - [ ] Preset themes (e.g., "dark reader", "high contrast", "sepia")
 - [ ] Per-domain enable/disable toggle
-- [ ] Ignored domains list (extension inactive on these sites)
+- [x] Ignored domains list (extension inactive on these sites)
 - [ ] Inline style extraction (pull existing inline styles into editor)
 - [ ] Class-to-style resolution (display computed styles for Tailwind classes)
-- [ ] Keyboard shortcut configuration UI
+- [x] Keyboard shortcut configuration UI
 - [ ] Export as Chrome extension / bookmarklet
 
 ## Phase 5: CI & DX
 
-- [ ] GitHub Actions CI (lint, typecheck, test, build)
+- [x] GitHub Actions CI (lint, typecheck, test, build)
 - [ ] Add E2E tests with Playwright
 - [ ] Add bundle size monitoring
 - [ ] Add error tracking / Sentry integration

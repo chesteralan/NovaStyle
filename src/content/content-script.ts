@@ -4,6 +4,18 @@ import { updateStylesheet, clearStylesheet } from './injector'
 import { getSettings, saveStyles } from '@/storage/db'
 import type { ContentMessage } from '@/types'
 
+const CURRENT_DOMAIN = window.location.hostname.replace(/^www\./, '')
+
+getSettings().then((settings) => {
+  if ((settings.ignoredDomains ?? []).includes(CURRENT_DOMAIN)) return
+  chrome.storage.local.get(CURRENT_DOMAIN).then((result: unknown) => {
+    const data = (result as Record<string, { styles?: Record<string, Record<string, string>> } | undefined>)[CURRENT_DOMAIN]
+    if (data?.styles) {
+      updateStylesheet(data.styles)
+    }
+  })
+})
+
 let highlighter: HighlighterState | null = null
 let active = false
 let panelMountPoint: HTMLElement | null = null
@@ -131,13 +143,5 @@ chrome.runtime.onMessage.addListener((message: unknown) => {
   if (msg.type === 'TOGGLE_EXTENSION') {
     if (msg.state === 'active') activate()
     else deactivate()
-  }
-})
-
-const domain = window.location.hostname.replace(/^www\./, '')
-chrome.storage.local.get(domain).then((result: unknown) => {
-  const data = (result as Record<string, { styles?: Record<string, Record<string, string>> } | undefined>)[domain]
-  if (data?.styles) {
-    updateStylesheet(data.styles)
   }
 })

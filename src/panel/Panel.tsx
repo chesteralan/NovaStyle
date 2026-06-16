@@ -1,10 +1,13 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { BoxModel } from './components/BoxModel'
 import { Typography } from './components/Typography'
 import { ColorPicker } from './components/ColorPicker'
 import { ClassInput } from './components/ClassInput'
 import { BorderEditor } from './components/BorderEditor'
 import { EffectsEditor } from './components/EffectsEditor'
+import { FontDetector } from './components/FontDetector'
+import { CustomCSS } from './components/CustomCSS'
+import { ColorPalette } from './components/ColorPalette'
 import { ExportPanel } from './components/ExportPanel'
 import type { StyleMap, NovaStyleSettings } from '@/types'
 
@@ -32,10 +35,13 @@ interface PanelProps {
   classNames: string[]
   onUpdate: (selector: string, property: string, value: string) => void
   onClose: () => void
+  onUndo: () => void
+  onRedo: () => void
   onAddClass: (className: string) => void
   onRemoveClass: (className: string) => void
   defaultPosition?: PanelPosition
   visibleEditors?: NovaStyleSettings['visibleEditors']
+  theme?: NovaStyleSettings['theme']
 }
 
 function Accordion({ title, defaultOpen, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
@@ -54,11 +60,38 @@ function Accordion({ title, defaultOpen, children }: { title: string; defaultOpe
   )
 }
 
-export function Panel({ selector, styles, classNames, onUpdate, onClose, onAddClass, onRemoveClass, defaultPosition, visibleEditors }: PanelProps) {
+export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo, onRedo, onAddClass, onRemoveClass, defaultPosition, visibleEditors, theme }: PanelProps) {
   const [position, setPosition] = useState<PanelPosition>(defaultPosition ?? 'right')
   const [floating, setFloating] = useState(false)
   const [floatPos, setFloatPos] = useState({ top: 60, left: 0 })
   const dragRef = useRef<{ startX: number; startY: number; startTop: number; startLeft: number } | null>(null)
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+        return
+      }
+      const mod = e.metaKey || e.ctrlKey
+      if (mod && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        onUndo()
+        return
+      }
+      if (mod && e.key === 'z' && e.shiftKey) {
+        e.preventDefault()
+        onRedo()
+        return
+      }
+      if (mod && e.key === 'y') {
+        e.preventDefault()
+        onRedo()
+        return
+      }
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [onClose, onUndo, onRedo])
 
   const cyclePosition = () => {
     if (floating) {
@@ -123,7 +156,7 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onAddCl
 
   return (
     <div
-      className={floating ? 'bg-white shadow-lg rounded-lg border border-slate-300 flex flex-col' : `${positionClasses[position]} bg-white shadow-lg flex flex-col`}
+      className={`${floating ? 'bg-white shadow-lg rounded-lg border border-slate-300 flex flex-col' : `${positionClasses[position]} bg-white shadow-lg flex flex-col`}${theme === 'dark' ? ' dark' : ''}`}
       style={containerStyle}
       role="dialog"
       aria-label="NovaStyle style editor"
@@ -183,11 +216,20 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onAddCl
             <ColorPicker selector={selector} onUpdate={onUpdate} />
           </Accordion>
         )}
+        <Accordion title="Palette">
+          <ColorPalette />
+        </Accordion>
         <Accordion title="Border">
           <BorderEditor selector={selector} onUpdate={onUpdate} />
         </Accordion>
         <Accordion title="Effects">
           <EffectsEditor selector={selector} onUpdate={onUpdate} />
+        </Accordion>
+        <Accordion title="Fonts">
+          <FontDetector />
+        </Accordion>
+        <Accordion title="Custom CSS">
+          <CustomCSS />
         </Accordion>
         <Accordion title="Export">
           <ExportPanel styles={styles} />
