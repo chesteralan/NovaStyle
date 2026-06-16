@@ -6,7 +6,7 @@ import { ClassInput } from './components/ClassInput'
 import { BorderEditor } from './components/BorderEditor'
 import { EffectsEditor } from './components/EffectsEditor'
 import { ExportPanel } from './components/ExportPanel'
-import type { StyleMap } from '@/types'
+import type { StyleMap, NovaStyleSettings } from '@/types'
 
 type PanelPosition = 'right' | 'left' | 'bottom' | 'top'
 
@@ -34,6 +34,8 @@ interface PanelProps {
   onClose: () => void
   onAddClass: (className: string) => void
   onRemoveClass: (className: string) => void
+  defaultPosition?: PanelPosition
+  visibleEditors?: NovaStyleSettings['visibleEditors']
 }
 
 function Accordion({ title, defaultOpen, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
@@ -52,8 +54,8 @@ function Accordion({ title, defaultOpen, children }: { title: string; defaultOpe
   )
 }
 
-export function Panel({ selector, styles, classNames, onUpdate, onClose, onAddClass, onRemoveClass }: PanelProps) {
-  const [position, setPosition] = useState<PanelPosition>('right')
+export function Panel({ selector, styles, classNames, onUpdate, onClose, onAddClass, onRemoveClass, defaultPosition, visibleEditors }: PanelProps) {
+  const [position, setPosition] = useState<PanelPosition>(defaultPosition ?? 'right')
   const [floating, setFloating] = useState(false)
   const [floatPos, setFloatPos] = useState({ top: 60, left: 0 })
   const dragRef = useRef<{ startX: number; startY: number; startTop: number; startLeft: number } | null>(null)
@@ -161,18 +163,26 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onAddCl
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        <Accordion title="Classes">
-          <ClassInput classes={classNames} onAdd={onAddClass} onRemove={onRemoveClass} />
-        </Accordion>
-        <Accordion title="Spacing">
-          <BoxModel selector={selector} onUpdate={onUpdate} />
-        </Accordion>
-        <Accordion title="Typography">
-          <Typography selector={selector} onUpdate={onUpdate} />
-        </Accordion>
-        <Accordion title="Colors">
-          <ColorPicker selector={selector} onUpdate={onUpdate} />
-        </Accordion>
+        {visibleEditors?.classInput !== false && (
+          <Accordion title="Classes">
+            <ClassInput classes={classNames} onAdd={onAddClass} onRemove={onRemoveClass} />
+          </Accordion>
+        )}
+        {visibleEditors?.boxModel !== false && (
+          <Accordion title="Spacing">
+            <BoxModel selector={selector} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.typography !== false && (
+          <Accordion title="Typography">
+            <Typography selector={selector} onUpdate={onUpdate} />
+          </Accordion>
+        )}
+        {visibleEditors?.colorPicker !== false && (
+          <Accordion title="Colors">
+            <ColorPicker selector={selector} onUpdate={onUpdate} />
+          </Accordion>
+        )}
         <Accordion title="Border">
           <BorderEditor selector={selector} onUpdate={onUpdate} />
         </Accordion>

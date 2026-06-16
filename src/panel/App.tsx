@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Panel } from './Panel'
 import { useStyleStore } from './hooks/useStyles'
-import type { StyleMap } from '@/types'
+import type { StyleMap, NovaStyleSettings } from '@/types'
 
 interface AppProps {
   selector: string
   initialStyles?: StyleMap
   initialClasses?: string[]
+  settings?: NovaStyleSettings
 }
 
-export function App({ selector: initialSelector, initialStyles, initialClasses }: AppProps) {
+export function App({ selector: initialSelector, initialStyles, initialClasses, settings }: AppProps) {
   const [currentSelector, setCurrentSelector] = useState(initialSelector)
   const store = useStyleStore()
 
@@ -80,6 +81,8 @@ export function App({ selector: initialSelector, initialStyles, initialClasses }
       onClose={onClose}
       onAddClass={onAddClass}
       onRemoveClass={onRemoveClass}
+      defaultPosition={settings?.defaultPosition}
+      visibleEditors={settings?.visibleEditors}
     />
   )
 }

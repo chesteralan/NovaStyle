@@ -17,9 +17,9 @@
 - [x] Panel accordion: collapsed by default
 - [x] New accordion sections: Border, Effects
 - [x] Floating/draggable panel toggle (drag anywhere on the page)
-- [ ] Persist panel position preference to storage and apply on open
-- [ ] Persist theme preference and apply to panel
-- [ ] Persist visible editors preference
+- [x] Persist panel position preference to storage and apply on open
+- [x] Persist theme preference and apply to panel
+- [x] Persist visible editors preference
 
 ## Phase 2: Style Management
 

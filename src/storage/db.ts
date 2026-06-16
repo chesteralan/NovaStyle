@@ -1,19 +1,9 @@
-import type { StyleMap } from '@/types'
+import type { StyleMap, NovaStyleSettings } from '@/types'
 
 const STORAGE_KEY_PREFIX = 'novastyle_'
 const SETTINGS_KEY = 'novastyle_settings'
 
-export interface NovaStyleSettings {
-  defaultPosition: 'right' | 'left' | 'bottom' | 'top'
-  panelWidth: number
-  theme: 'light' | 'dark'
-  visibleEditors: {
-    classInput: boolean
-    boxModel: boolean
-    typography: boolean
-    colorPicker: boolean
-  }
-}
+export type { NovaStyleSettings }
 
 const defaultSettings: NovaStyleSettings = {
   defaultPosition: 'right',
