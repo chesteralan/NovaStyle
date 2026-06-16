@@ -1,11 +1,14 @@
+import { pxValue } from '../lib/cssUnits'
+
 interface BoxModelProps {
   selector: string
+  styles: Record<string, string>
   onUpdate: (selector: string, property: string, value: string) => void
 }
 
 const SIDES = ['top', 'right', 'bottom', 'left'] as const
 
-export function BoxModel({ selector, onUpdate }: BoxModelProps) {
+export function BoxModel({ selector, styles, onUpdate }: BoxModelProps) {
   return (
     <div className="space-y-2">
       <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Box Model</div>
@@ -20,7 +23,8 @@ export function BoxModel({ selector, onUpdate }: BoxModelProps) {
                 placeholder={side}
                 aria-label={`${layer} ${side}`}
                 className="w-full px-1.5 py-0.5 text-xs border border-slate-200 rounded"
-                onChange={(e) => onUpdate(selector, `${layer}-${side}`, `${e.target.value}px`)}
+                value={styles[`${layer}-${side}`] ?? ''}
+                onChange={(e) => onUpdate(selector, `${layer}-${side}`, pxValue(e.target.value))}
               />
             ))}
           </div>

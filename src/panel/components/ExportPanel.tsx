@@ -10,7 +10,7 @@ interface ExportPanelProps {
 
 export function ExportPanel({ styles }: ExportPanelProps) {
   const [copied, setCopied] = useState(false)
-  const css = exportToCSS(styles, window.location?.hostname)
+  const css = exportToCSS(styles, window.location.hostname)
 
   const handleCopy = async () => {
     try {

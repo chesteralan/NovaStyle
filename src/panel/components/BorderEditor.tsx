@@ -1,11 +1,14 @@
+import { pxValue } from '../lib/cssUnits'
+
 const BORDER_STYLES = ['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset', 'none']
 
 interface BorderEditorProps {
   selector: string
+  styles: Record<string, string>
   onUpdate: (selector: string, property: string, value: string) => void
 }
 
-export function BorderEditor({ selector, onUpdate }: BorderEditorProps) {
+export function BorderEditor({ selector, styles, onUpdate }: BorderEditorProps) {
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-2 gap-2">
@@ -16,7 +19,8 @@ export function BorderEditor({ selector, onUpdate }: BorderEditorProps) {
             min={0}
             aria-label="Border width"
             className="w-full px-2 py-1 text-xs border border-slate-200 rounded"
-            onChange={(e) => onUpdate(selector, 'border-width', `${e.target.value}px`)}
+            value={styles['border-width'] ?? ''}
+            onChange={(e) => onUpdate(selector, 'border-width', pxValue(e.target.value))}
           />
         </div>
         <div>
@@ -24,6 +28,7 @@ export function BorderEditor({ selector, onUpdate }: BorderEditorProps) {
           <select
             className="w-full px-2 py-1 text-xs border border-slate-200 rounded"
             aria-label="Border style"
+            value={styles['border-style'] ?? ''}
             onChange={(e) => onUpdate(selector, 'border-style', e.target.value)}
           >
             {BORDER_STYLES.map((s) => (
@@ -40,6 +45,7 @@ export function BorderEditor({ selector, onUpdate }: BorderEditorProps) {
           placeholder="#000000"
           aria-label="Border color"
           className="w-full px-2 py-1 text-xs border border-slate-200 rounded font-mono"
+          value={styles['border-color'] ?? ''}
           onChange={(e) => onUpdate(selector, 'border-color', e.target.value)}
         />
       </div>
@@ -51,7 +57,8 @@ export function BorderEditor({ selector, onUpdate }: BorderEditorProps) {
           min={0}
           aria-label="Border radius"
           className="w-full px-2 py-1 text-xs border border-slate-200 rounded"
-          onChange={(e) => onUpdate(selector, 'border-radius', `${e.target.value}px`)}
+          value={styles['border-radius'] ?? ''}
+          onChange={(e) => onUpdate(selector, 'border-radius', pxValue(e.target.value))}
         />
       </div>
     </div>

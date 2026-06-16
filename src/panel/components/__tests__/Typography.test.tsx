@@ -3,7 +3,7 @@ import { Typography } from '../Typography'
 
 describe('Typography', () => {
   it('renders typography section', () => {
-    render(<Typography selector=".test" onUpdate={vi.fn()} />)
+    render(<Typography selector=".test" styles={{}} onUpdate={vi.fn()} />)
     expect(screen.getByText('Typography')).toBeInTheDocument()
     expect(screen.getByText('Font Family')).toBeInTheDocument()
     expect(screen.getByText('Size (px)')).toBeInTheDocument()
@@ -15,7 +15,7 @@ describe('Typography', () => {
 
   it('calls onUpdate with font-family on select change', () => {
     const onUpdate = vi.fn()
-    render(<Typography selector=".test" onUpdate={onUpdate} />)
+    render(<Typography selector=".test" styles={{}} onUpdate={onUpdate} />)
     const select = screen.getByRole('combobox')
     fireEvent.change(select, { target: { value: 'serif' } })
     expect(onUpdate).toHaveBeenCalledWith('.test', 'font-family', 'serif')
@@ -23,7 +23,7 @@ describe('Typography', () => {
 
   it('calls onUpdate with font-size on number input change', () => {
     const onUpdate = vi.fn()
-    render(<Typography selector=".test" onUpdate={onUpdate} />)
+    render(<Typography selector=".test" styles={{}} onUpdate={onUpdate} />)
     const spinbuttons = screen.getAllByRole('spinbutton')
     fireEvent.change(spinbuttons[0], { target: { value: '24' } })
     expect(onUpdate).toHaveBeenCalledWith('.test', 'font-size', '24px')
@@ -31,7 +31,7 @@ describe('Typography', () => {
 
   it('calls onUpdate with text-align on alignment button click', () => {
     const onUpdate = vi.fn()
-    render(<Typography selector=".test" onUpdate={onUpdate} />)
+    render(<Typography selector=".test" styles={{}} onUpdate={onUpdate} />)
     const buttons = screen.getAllByRole('button')
     fireEvent.click(buttons[0])
     expect(onUpdate).toHaveBeenCalledWith('.test', 'text-align', 'left')
@@ -40,7 +40,7 @@ describe('Typography', () => {
   })
 
   it('renders all four alignment buttons', () => {
-    render(<Typography selector=".test" onUpdate={vi.fn()} />)
+    render(<Typography selector=".test" styles={{}} onUpdate={vi.fn()} />)
     const buttons = screen.getAllByRole('button')
     expect(buttons).toHaveLength(4)
     expect(buttons[0]).toHaveTextContent('L')

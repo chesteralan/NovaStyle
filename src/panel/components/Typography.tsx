@@ -1,3 +1,5 @@
+import { pxValue } from '../lib/cssUnits'
+
 const FONTS = [
   'system-ui, sans-serif',
   'serif',
@@ -20,10 +22,11 @@ const FONT_WEIGHT_RANGE = { min: 100, max: 900, step: 100 }
 
 interface TypographyProps {
   selector: string
+  styles: Record<string, string>
   onUpdate: (selector: string, property: string, value: string) => void
 }
 
-export function Typography({ selector, onUpdate }: TypographyProps) {
+export function Typography({ selector, styles, onUpdate }: TypographyProps) {
   return (
     <div className="space-y-3">
       <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Typography</div>
@@ -33,6 +36,7 @@ export function Typography({ selector, onUpdate }: TypographyProps) {
         <select
           className="w-full px-2 py-1 text-xs border border-slate-200 rounded"
           aria-label="Font family"
+          value={styles['font-family'] ?? ''}
           onChange={(e) => onUpdate(selector, 'font-family', e.target.value)}
         >
           {FONTS.map((f) => (
@@ -50,7 +54,8 @@ export function Typography({ selector, onUpdate }: TypographyProps) {
             className="w-full px-2 py-1 text-xs border border-slate-200 rounded"
             min={FONT_SIZE_RANGE.min}
             max={FONT_SIZE_RANGE.max}
-            onChange={(e) => onUpdate(selector, 'font-size', `${e.target.value}px`)}
+            value={styles['font-size'] ?? ''}
+            onChange={(e) => onUpdate(selector, 'font-size', pxValue(e.target.value))}
           />
         </div>
         <div>
@@ -62,6 +67,7 @@ export function Typography({ selector, onUpdate }: TypographyProps) {
             className="w-full px-2 py-1 text-xs border border-slate-200 rounded"
             min={LINE_HEIGHT_RANGE.min}
             max={LINE_HEIGHT_RANGE.max}
+            value={styles['line-height'] ?? ''}
             onChange={(e) => onUpdate(selector, 'line-height', e.target.value)}
           />
         </div>
@@ -75,7 +81,8 @@ export function Typography({ selector, onUpdate }: TypographyProps) {
             step="0.5"
             aria-label="Letter spacing"
             className="w-full px-2 py-1 text-xs border border-slate-200 rounded"
-            onChange={(e) => onUpdate(selector, 'letter-spacing', `${e.target.value}px`)}
+            value={styles['letter-spacing'] ?? ''}
+            onChange={(e) => onUpdate(selector, 'letter-spacing', pxValue(e.target.value))}
           />
         </div>
         <div>
@@ -87,6 +94,7 @@ export function Typography({ selector, onUpdate }: TypographyProps) {
             max={FONT_WEIGHT_RANGE.max}
             step={FONT_WEIGHT_RANGE.step}
             className="w-full"
+            value={styles['font-weight'] ?? '400'}
             onChange={(e) => onUpdate(selector, 'font-weight', e.target.value)}
           />
         </div>

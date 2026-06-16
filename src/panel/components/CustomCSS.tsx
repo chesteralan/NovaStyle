@@ -1,14 +1,7 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 
-let customSheet: HTMLStyleElement | null = null
-
-function ensureSheet(): HTMLStyleElement {
-  if (!customSheet) {
-    customSheet = document.createElement('style')
-    customSheet.id = 'novastyle-custom-css'
-    document.head.appendChild(customSheet)
-  }
-  return customSheet
+function sanitizeCSS(css: string): string {
+  return css.replace(/javascript\s*:/gi, 'blocked:').replace(/expression\s*\(/gi, '/* blocked */')
 }
 
 export function CustomCSS() {
@@ -16,11 +9,31 @@ export function CustomCSS() {
   const [saved, setSaved] = useState(false)
   const [active, setActive] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const sheetRef = useRef<HTMLStyleElement | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (sheetRef.current) {
+        sheetRef.current.remove()
+        sheetRef.current = null
+      }
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [])
+
+  const ensureSheet = useCallback((): HTMLStyleElement => {
+    if (!sheetRef.current) {
+      sheetRef.current = document.createElement('style')
+      sheetRef.current.id = 'novastyle-custom-css'
+      document.head.appendChild(sheetRef.current)
+    }
+    return sheetRef.current
+  }, [])
 
   const apply = useCallback((value: string) => {
     const sheet = ensureSheet()
-    sheet.textContent = value
-  }, [])
+    sheet.textContent = sanitizeCSS(value)
+  }, [ensureSheet])
 
   const handleChange = (value: string) => {
     setCss(value)
@@ -38,9 +51,8 @@ export function CustomCSS() {
     setActive(next)
     if (next) {
       apply(css)
-    } else {
-      const sheet = ensureSheet()
-      sheet.textContent = ''
+    } else if (sheetRef.current) {
+      sheetRef.current.textContent = ''
     }
   }
 

@@ -12,28 +12,13 @@ import {
   type NovaStyleSettings,
 } from '@/storage/db'
 import type { StyleMap } from '@/types'
+import { Accordion } from '@/components/Accordion'
 
 interface DomainEntry {
   domain: string
   styles: StyleMap
   expanded: boolean
   updatedAt: number
-}
-
-function AccordionSection({ title, defaultOpen, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
-  const [open, setOpen] = useState(defaultOpen ?? false)
-  return (
-    <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
-      <button
-        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50"
-        onClick={() => setOpen(!open)}
-      >
-        <span className="font-medium text-sm text-slate-800">{title}</span>
-        <span className="text-slate-400 text-xs select-none">{open ? '▾' : '▸'}</span>
-      </button>
-      {open && <div className="border-t border-slate-100 px-4 py-3">{children}</div>}
-    </div>
-  )
 }
 
 export function Options() {
@@ -324,7 +309,7 @@ export function Options() {
 
         <div className="space-y-3">
           {/* Saved Styles */}
-          <AccordionSection title="Saved Styles" defaultOpen>
+          <Accordion title="Saved Styles" defaultOpen headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50" titleClass="font-medium text-sm text-slate-800" contentClass="border-t border-slate-100 px-4 py-3">
             {loading ? (
               <div className="text-sm text-slate-400">Loading...</div>
             ) : entries.length === 0 ? (
@@ -500,7 +485,7 @@ export function Options() {
                 </div>
               </div>
             )}
-          </AccordionSection>
+          </Accordion>
 
           {showHistoryFor && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
@@ -548,7 +533,7 @@ export function Options() {
           )}
 
           {/* Panel Settings */}
-          <AccordionSection title="Panel Settings">
+          <Accordion title="Panel Settings" headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50" titleClass="font-medium text-sm text-slate-800" contentClass="border-t border-slate-100 px-4 py-3">
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-slate-700 mb-1.5">Default Position</label>
@@ -580,10 +565,10 @@ export function Options() {
                 </div>
               </div>
             </div>
-          </AccordionSection>
+          </Accordion>
 
           {/* Editor Settings */}
-          <AccordionSection title="Editor Settings">
+          <Accordion title="Editor Settings" headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50" titleClass="font-medium text-sm text-slate-800" contentClass="border-t border-slate-100 px-4 py-3">
             <div className="space-y-3">
               {([
                 { key: 'classInput' as const, label: 'Class Name Editor' },
@@ -602,10 +587,10 @@ export function Options() {
                 </label>
               ))}
             </div>
-          </AccordionSection>
+          </Accordion>
 
           {/* Theme */}
-          <AccordionSection title="Theme">
+          <Accordion title="Theme" headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50" titleClass="font-medium text-sm text-slate-800" contentClass="border-t border-slate-100 px-4 py-3">
             <div className="space-y-3">
               <div className="flex items-center gap-4">
                 {(['light', 'dark'] as const).map((t) => (
@@ -647,20 +632,20 @@ export function Options() {
                 </div>
               </div>
             </div>
-          </AccordionSection>
+          </Accordion>
 
           {/* Shortcuts */}
-          <AccordionSection title="Shortcuts">
+          <Accordion title="Shortcuts" headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50" titleClass="font-medium text-sm text-slate-800" contentClass="border-t border-slate-100 px-4 py-3">
             <div className="space-y-2 text-xs text-slate-600">
               <div className="flex justify-between"><kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">Esc</kbd><span>Close panel</span></div>
               <div className="flex justify-between"><kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">⌘Z / Ctrl+Z</kbd><span>Undo</span></div>
               <div className="flex justify-between"><kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">⌘⇧Z / Ctrl+Shift+Z</kbd><span>Redo</span></div>
               <div className="flex justify-between"><kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">⌘Y / Ctrl+Y</kbd><span>Redo (alternate)</span></div>
             </div>
-          </AccordionSection>
+          </Accordion>
 
           {/* Export / Import */}
-          <AccordionSection title="Export / Import">
+          <Accordion title="Export / Import" headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50" titleClass="font-medium text-sm text-slate-800" contentClass="border-t border-slate-100 px-4 py-3">
             <div className="flex items-center gap-3">
               <button
                 className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
@@ -685,10 +670,10 @@ export function Options() {
                 onChange={handleImport}
               />
             </div>
-          </AccordionSection>
+          </Accordion>
 
           {/* Advanced */}
-          <AccordionSection title="Advanced">
+          <Accordion title="Advanced" headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50" titleClass="font-medium text-sm text-slate-800" contentClass="border-t border-slate-100 px-4 py-3">
             <div className="space-y-3">
               <div>
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -741,7 +726,7 @@ export function Options() {
                 </button>
               </div>
             </div>
-          </AccordionSection>
+          </Accordion>
         </div>
       </div>
     </div>

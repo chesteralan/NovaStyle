@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath } from 'url'
 import { dirname, resolve } from 'path'
-import { renameSync, existsSync } from 'fs'
+import { renameSync, existsSync, readFileSync, writeFileSync } from 'fs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -15,7 +15,7 @@ function stripCrossorigin(): import('vite').Plugin {
     enforce: 'post',
     transform(code: string, id: string) {
       if (!id.endsWith('.html')) return
-      return code.replace(/crossorigin\b[^>]*>/g, '>').replace(/rel="modulepreload"[^>]*>/g, '>')
+      return code.replace(/\s+crossorigin\b[^>]*>/g, '>').replace(/\s+rel="modulepreload"[^>]*>/g, '>')
     },
   }
 }
@@ -49,6 +49,17 @@ async function main() {
       emptyOutDir: true,
     },
   } satisfies UserConfig)
+
+  // Options and panel both produce style.css; distinguish them before the panel build overwrites it
+  const esmCss = resolve(__dirname, 'dist', 'assets', 'style.css')
+  const optionsCss = resolve(__dirname, 'dist', 'assets', 'options.css')
+  if (existsSync(esmCss)) {
+    renameSync(esmCss, optionsCss)
+    const optionsHtml = resolve(__dirname, 'dist', 'options.html')
+    const html = readFileSync(optionsHtml, 'utf-8').replace('/assets/style.css', '/assets/options.css')
+    writeFileSync(optionsHtml, html)
+    console.log('Renamed assets/style.css → assets/options.css')
+  }
 
   console.log('Building content-script as IIFE...')
   await build({

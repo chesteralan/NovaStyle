@@ -20,6 +20,8 @@ let highlighter: HighlighterState | null = null
 let active = false
 let panelMountPoint: HTMLElement | null = null
 let lastClicked: HTMLElement | null = null
+let updateHandler: EventListener | null = null
+let updateClassesHandler: EventListener | null = null
 
 function onMouseOver(e: MouseEvent) {
   if (!active || !highlighter) return
@@ -97,18 +99,33 @@ async function openPanel(selector: string, styles: Record<string, Record<string,
   document.body.appendChild(mainScript)
 
   window.addEventListener('novastyle:close', () => closePanel(), { once: true })
-  window.addEventListener('novastyle:update', ((e: CustomEvent) => {
+  updateHandler = ((e: CustomEvent) => {
     const { styles } = e.detail as { styles: Record<string, Record<string, string>> }
     updateStylesheet(styles)
     saveStyles(domain, styles)
-  }) as EventListener)
-  window.addEventListener('novastyle:update-classes', ((e: CustomEvent) => {
+  }) as EventListener
+  window.addEventListener('novastyle:update', updateHandler)
+  updateClassesHandler = ((e: CustomEvent) => {
     const { classes } = e.detail as { classes: string[] }
-    if (lastClicked) lastClicked.className = classes.join(' ')
-  }) as EventListener)
+    if (lastClicked) {
+      lastClicked.classList.forEach((c) => {
+        if (!classes.includes(c)) lastClicked?.classList.remove(c)
+      })
+      classes.forEach((c) => lastClicked?.classList.add(c))
+    }
+  }) as EventListener
+  window.addEventListener('novastyle:update-classes', updateClassesHandler)
 }
 
 function closePanel() {
+  if (updateHandler) {
+    window.removeEventListener('novastyle:update', updateHandler)
+    updateHandler = null
+  }
+  if (updateClassesHandler) {
+    window.removeEventListener('novastyle:update-classes', updateClassesHandler)
+    updateClassesHandler = null
+  }
   panelMountPoint = null
   if (!document.getElementById('novastyle-root')) return
   const container = document.getElementById('novastyle-root')

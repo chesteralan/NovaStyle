@@ -6,35 +6,36 @@ interface FontInfo {
   sizes: string[]
 }
 
+const MAX_ELEMENTS = 2000
+
 export function FontDetector() {
   const [fonts, setFonts] = useState<FontInfo[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const detect = () => {
-      const all = document.body.querySelectorAll('*')
-      const map = new Map<string, { count: number; sizes: Set<string> }>()
-      for (const el of all) {
-        const fam = getComputedStyle(el).fontFamily
-        const size = getComputedStyle(el).fontSize
-        const key = fam.split(',')[0].replace(/['"]/g, '').trim()
-        if (!key || key === 'inherit') continue
-        const entry = map.get(key) ?? { count: 0, sizes: new Set<string>() }
-        entry.count++
-        entry.sizes.add(size)
-        map.set(key, entry)
-      }
-      const sorted = [...map.entries()]
-        .sort((a, b) => b[1].count - a[1].count)
-        .map(([family, info]) => ({
-          family,
-          count: info.count,
-          sizes: [...info.sizes].sort().slice(0, 5),
-        }))
-      setFonts(sorted)
-      setLoading(false)
+    const all = document.body.querySelectorAll('*')
+    const limit = Math.min(all.length, MAX_ELEMENTS)
+    const map = new Map<string, { count: number; sizes: Set<string> }>()
+    for (let i = 0; i < limit; i++) {
+      const el = all[i]
+      const fam = getComputedStyle(el).fontFamily
+      const size = getComputedStyle(el).fontSize
+      const key = fam.split(',')[0].replace(/['"]/g, '').trim()
+      if (!key || key === 'inherit') continue
+      const entry = map.get(key) ?? { count: 0, sizes: new Set<string>() }
+      entry.count++
+      entry.sizes.add(size)
+      map.set(key, entry)
     }
-    detect()
+    const sorted = [...map.entries()]
+      .sort((a, b) => b[1].count - a[1].count)
+      .map(([family, info]) => ({
+        family,
+        count: info.count,
+        sizes: [...info.sizes].sort().slice(0, 5),
+      }))
+    setFonts(sorted)
+    setLoading(false)
   }, [])
 
   return (

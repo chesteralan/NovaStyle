@@ -51,7 +51,7 @@ export function EffectsEditor({ selector, onUpdate }: EffectsEditorProps) {
               aria-label="Shadow X offset"
               className="w-full px-1.5 py-0.5 text-xs border border-slate-200 rounded"
               value={shadowX}
-              onChange={(e) => { setShadowX(e.target.value); updateShadow(e.target.value, shadowY, shadowBlur) }}
+              onChange={(e) => { const v = e.target.value; setShadowX(v); updateShadow(v, shadowY, shadowBlur) }}
             />
           </div>
           <div>
@@ -61,7 +61,7 @@ export function EffectsEditor({ selector, onUpdate }: EffectsEditorProps) {
               aria-label="Shadow Y offset"
               className="w-full px-1.5 py-0.5 text-xs border border-slate-200 rounded"
               value={shadowY}
-              onChange={(e) => { setShadowY(e.target.value); updateShadow(shadowX, e.target.value, shadowBlur) }}
+              onChange={(e) => { const v = e.target.value; setShadowY(v); updateShadow(shadowX, v, shadowBlur) }}
             />
           </div>
           <div>
@@ -72,7 +72,7 @@ export function EffectsEditor({ selector, onUpdate }: EffectsEditorProps) {
               aria-label="Shadow blur"
               className="w-full px-1.5 py-0.5 text-xs border border-slate-200 rounded"
               value={shadowBlur}
-              onChange={(e) => { setShadowBlur(e.target.value); updateShadow(shadowX, shadowY, e.target.value) }}
+              onChange={(e) => { const v = e.target.value; setShadowBlur(v); updateShadow(shadowX, shadowY, v) }}
             />
           </div>
         </div>
