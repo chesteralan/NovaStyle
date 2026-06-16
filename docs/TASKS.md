@@ -23,9 +23,9 @@
 
 ## Phase 2: Style Management
 
-- [ ] Search/filter domains in options page
-- [ ] Bulk select and delete domains
-- [ ] Export individual domain styles (not just all)
+- [x] Search/filter domains in options page
+- [x] Bulk select and delete domains
+- [x] Export individual domain styles (not just all)
 - [ ] Style history / version snapshots per domain
 - [ ] Rename domains
 - [ ] Sort domains (by name, last edited)

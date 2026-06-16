@@ -28,6 +28,8 @@ export function Options() {
   const [entries, setEntries] = useState<DomainEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedDomains, setSelectedDomains] = useState<Set<string>>(new Set())
   const [settings, setSettings] = useState<NovaStyleSettings>({
     defaultPosition: 'right',
     panelWidth: 320,
@@ -73,7 +75,34 @@ export function Options() {
   const handleDelete = async (domain: string) => {
     await removeDomainStyles(domain)
     setEntries((prev) => prev.filter((e) => e.domain !== domain))
+    setSelectedDomains((prev) => { const next = new Set(prev); next.delete(domain); return next })
     showMessage(`Deleted styles for ${domain}`)
+  }
+
+  const toggleSelected = (domain: string) => {
+    setSelectedDomains((prev) => {
+      const next = new Set(prev)
+      if (next.has(domain)) next.delete(domain)
+      else next.add(domain)
+      return next
+    })
+  }
+
+  const toggleSelectAll = () => {
+    const currentFiltered = filtered.map((e) => e.domain)
+    setSelectedDomains((prev) => {
+      const allSelected = currentFiltered.every((d) => prev.has(d))
+      if (allSelected) return new Set()
+      return new Set(currentFiltered)
+    })
+  }
+
+  const handleBulkDelete = async () => {
+    const domains = [...selectedDomains]
+    await Promise.all(domains.map(removeDomainStyles))
+    setEntries((prev) => prev.filter((e) => !selectedDomains.has(e.domain)))
+    showMessage(`Deleted ${domains.length} domain(s)`)
+    setSelectedDomains(new Set())
   }
 
   const handleClearAll = async () => {
@@ -96,6 +125,17 @@ export function Options() {
     a.click()
     URL.revokeObjectURL(url)
     showMessage('Styles exported')
+  }
+
+  const handleExportDomain = (domain: string, styles: StyleMap) => {
+    const blob = new Blob([JSON.stringify({ [domain]: styles }, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `novastyle-${domain}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    showMessage(`Exported ${domain}`)
   }
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,6 +190,10 @@ export function Options() {
     showMessage('Settings reset to defaults')
   }
 
+  const filtered = searchQuery
+    ? entries.filter((e) => e.domain.toLowerCase().includes(searchQuery.toLowerCase()))
+    : entries
+
   const totalSelectors = entries.reduce(
     (sum, e) => sum + Object.keys(e.styles).length,
     0,
@@ -187,13 +231,54 @@ export function Options() {
               </div>
             ) : (
               <div>
-                <div className="mb-3 flex items-center gap-2 text-xs text-slate-500">
-                  <span className="font-semibold text-slate-700">{entries.length}</span> domain(s),
-                  <span className="font-semibold text-slate-700">{totalSelectors}</span> selector(s),
-                  <span className="font-semibold text-slate-700">{totalProperties}</span> propert(ies)
+                <div className="flex items-center gap-2 mb-3">
+                  <label className="flex items-center gap-1 text-xs text-slate-500 cursor-pointer shrink-0">
+                    <input
+                      type="checkbox"
+                      checked={filtered.length > 0 && filtered.every((e) => selectedDomains.has(e.domain))}
+                      onChange={toggleSelectAll}
+                      className="rounded border-slate-300"
+                      aria-label="Select all"
+                    />
+                    All
+                  </label>
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      placeholder="Search domains..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-2 pr-8 py-1.5 text-xs border border-slate-300 rounded-md bg-white placeholder:text-slate-400"
+                      aria-label="Search domains"
+                    />
+                    {searchQuery && (
+                      <button
+                        className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                        onClick={() => setSearchQuery('')}
+                        aria-label="Clear search"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                  <span className="text-xs text-slate-500 shrink-0">
+                    <span className="font-semibold text-slate-700">{filtered.length}</span> / {entries.length} domain(s), <span className="font-semibold text-slate-700">{totalSelectors}</span> selector(s), <span className="font-semibold text-slate-700">{totalProperties}</span> propert(ies)
+                  </span>
+                  {selectedDomains.size > 0 && (
+                    <button
+                      className="text-xs text-red-600 hover:text-red-800 shrink-0 font-medium"
+                      onClick={handleBulkDelete}
+                      aria-label={`Delete ${selectedDomains.size} selected domain(s)`}
+                    >
+                      Delete ({selectedDomains.size})
+                    </button>
+                  )}
                 </div>
                 <div className="space-y-2">
-                  {entries.map((entry) => {
+                  {filtered.length === 0 && searchQuery ? (
+                    <div className="text-sm text-slate-400 py-4 text-center">No domains match your search.</div>
+                  ) : (
+                    filtered.map((entry) => {
                     const selectors = Object.keys(entry.styles)
                     const propCount = selectors.reduce(
                       (s, sel) => s + Object.keys(entry.styles[sel]).length,
@@ -203,6 +288,13 @@ export function Options() {
                       <div key={entry.domain} className="border border-slate-200 rounded-md">
                         <div className="flex items-center justify-between px-3 py-2">
                           <div className="flex items-center gap-2 min-w-0">
+                            <input
+                              type="checkbox"
+                              checked={selectedDomains.has(entry.domain)}
+                              onChange={() => toggleSelected(entry.domain)}
+                              className="rounded border-slate-300 shrink-0"
+                              aria-label={`Select ${entry.domain}`}
+                            />
                             <button
                               className="text-slate-400 hover:text-slate-600 text-xs shrink-0"
                               onClick={() => toggleExpand(entry.domain)}
@@ -215,13 +307,22 @@ export function Options() {
                               {selectors.length}s / {propCount}p
                             </span>
                           </div>
-                          <button
-                            className="text-xs text-red-500 hover:text-red-700 shrink-0 ml-2"
-                            onClick={() => handleDelete(entry.domain)}
-                            aria-label={`Delete styles for ${entry.domain}`}
-                          >
-                            Delete
-                          </button>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              className="text-xs text-blue-500 hover:text-blue-700"
+                              onClick={() => handleExportDomain(entry.domain, entry.styles)}
+                              aria-label={`Export styles for ${entry.domain}`}
+                            >
+                              Export
+                            </button>
+                            <button
+                              className="text-xs text-red-500 hover:text-red-700"
+                              onClick={() => handleDelete(entry.domain)}
+                              aria-label={`Delete styles for ${entry.domain}`}
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
                         {entry.expanded && (
                           <div className="border-t border-slate-100 px-3 py-2 space-y-1.5">
@@ -241,7 +342,7 @@ export function Options() {
                         )}
                       </div>
                     )
-                  })}
+                  }))}
                 </div>
               </div>
             )}

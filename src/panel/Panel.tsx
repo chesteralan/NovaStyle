@@ -13,10 +13,10 @@ type PanelPosition = 'right' | 'left' | 'bottom' | 'top'
 const POSITION_CYCLE: PanelPosition[] = ['right', 'left', 'bottom', 'top']
 
 const positionClasses: Record<PanelPosition, string> = {
-  right: 'fixed top-0 right-0 w-80 h-full border-l',
-  left: 'fixed top-0 left-0 w-80 h-full border-r',
-  bottom: 'fixed bottom-0 left-0 right-0 w-full h-80 border-t',
-  top: 'fixed top-0 left-0 right-0 w-full h-80 border-b',
+  right: 'fixed top-0 right-0 w-80 h-full border-l border-slate-300',
+  left: 'fixed top-0 left-0 w-80 h-full border-r border-slate-300',
+  bottom: 'fixed bottom-0 left-0 right-0 w-full h-80 border-t border-slate-300',
+  top: 'fixed top-0 left-0 right-0 w-full h-80 border-b border-slate-300',
 }
 
 const nextIcon: Record<PanelPosition, string> = {
@@ -123,7 +123,7 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onAddCl
 
   return (
     <div
-      className={floating ? 'bg-white shadow-lg rounded-lg flex flex-col' : `${positionClasses[position]} bg-white shadow-lg flex flex-col`}
+      className={floating ? 'bg-white shadow-lg rounded-lg border border-slate-300 flex flex-col' : `${positionClasses[position]} bg-white shadow-lg flex flex-col`}
       style={containerStyle}
       role="dialog"
       aria-label="NovaStyle style editor"
