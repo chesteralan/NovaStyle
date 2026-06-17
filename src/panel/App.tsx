@@ -25,6 +25,7 @@ export function App({ selector: initialSelector, initialStyles, initialClasses, 
     if (initialClasses && initialClasses.length > 0) {
       store.setClassNames(initialClasses)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
