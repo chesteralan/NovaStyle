@@ -1,4 +1,5 @@
 import { getStyles, saveStyles, removeDomainStyles, getAllDomains, extractDomain } from '../db'
+import browser from 'webextension-polyfill'
 
 describe('extractDomain', () => {
   it('extracts hostname from full URL', () => {
@@ -36,7 +37,7 @@ describe('getStyles / saveStyles', () => {
   it('saves with timestamp', async () => {
     await saveStyles('example.com', { '.b': { color: 'blue' } })
     const key = 'novastyle_example.com'
-    const data = await chrome.storage.local.get(key) as Record<string, any>
+    const data = await browser.storage.local.get(key) as Record<string, any>
     expect(data[key].updatedAt).toBeGreaterThan(0)
     expect(typeof data[key].updatedAt).toBe('number')
   })

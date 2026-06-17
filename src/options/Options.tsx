@@ -1,3 +1,4 @@
+import browser from 'webextension-polyfill'
 import { useEffect, useState, useRef, useCallback } from 'react'
 import {
   getAllDomainsWithMeta,
@@ -190,7 +191,7 @@ export function Options() {
       await Promise.all(
         Object.entries(data).map(async ([domain, styles]) => {
           const key = `novastyle_${domain}`
-          await chrome.storage.local.set({ [key]: { styles, updatedAt: Date.now() } })
+          await browser.storage.local.set({ [key]: { styles, updatedAt: Date.now() } })
         }),
       )
       showMessage(`Imported ${Object.keys(data).length} domain(s)`)

@@ -1,8 +1,10 @@
+import browser from 'webextension-polyfill'
+import type { Tabs, Runtime } from 'webextension-polyfill'
 import type { BackgroundMessage } from '@/types'
 
 const tabStates = new Map<number, 'active' | 'inactive'>()
 
-chrome.action.onClicked.addListener(async (tab: chrome.tabs.Tab) => {
+browser.action.onClicked.addListener(async (tab: Tabs.Tab) => {
   const tabId = tab.id
   if (!tabId) return
 
@@ -10,32 +12,30 @@ chrome.action.onClicked.addListener(async (tab: chrome.tabs.Tab) => {
   const next: 'active' | 'inactive' = current === 'active' ? 'inactive' : 'active'
   tabStates.set(tabId, next)
 
-  await chrome.action.setBadgeText({
+  await browser.action.setBadgeText({
     tabId,
     text: next === 'active' ? 'ON' : '',
   })
-  await chrome.action.setBadgeBackgroundColor({
+  await browser.action.setBadgeBackgroundColor({
     tabId,
     color: '#3b82f6',
   })
 
-  chrome.tabs.sendMessage(tabId, { type: 'TOGGLE_EXTENSION', state: next }).catch(() => {
+  browser.tabs.sendMessage(tabId, { type: 'TOGGLE_EXTENSION', state: next }).catch(() => {
     // tab may have been closed before message delivered
   })
 })
 
-chrome.runtime.onMessage.addListener((message: unknown, _sender: chrome.runtime.MessageSender, sendResponse: (response?: unknown) => void) => {
+browser.runtime.onMessage.addListener((message: unknown, _sender: Runtime.MessageSender) => {
   const msg = message as BackgroundMessage
   if (msg.type === 'GET_STYLES') {
-    chrome.storage.local.get(msg.domain).then((result: unknown) => {
-      sendResponse((result as Record<string, unknown>)[msg.domain] ?? null)
+    return browser.storage.local.get(msg.domain).then((result) => {
+      return (result as Record<string, unknown>)[msg.domain] ?? null
     })
-    return true
   }
   if (msg.type === 'SAVE_STYLES') {
-    chrome.storage.local.set({
+    return browser.storage.local.set({
       [msg.domain]: { styles: msg.styles, updatedAt: Date.now() },
     })
-    return
   }
 })

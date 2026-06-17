@@ -37,13 +37,32 @@ function makeStorage(store: Record<string, unknown>) {
   }
 }
 
-Object.assign(globalThis, {
-  chrome: {
+vi.mock('webextension-polyfill', () => {
+  const mockLocalStorage = makeStorage(__localStore)
+  const mockSyncStorage = makeStorage(__syncStore)
+  const mockBrowser = {
     storage: {
-      local: makeStorage(__localStore),
-      sync: makeStorage(__syncStore),
+      local: mockLocalStorage,
+      sync: mockSyncStorage,
     },
-  },
+    runtime: {
+      getURL: vi.fn((path: string) => `mock://${path}`),
+      onMessage: {
+        addListener: vi.fn(),
+      },
+    },
+    action: {
+      onClicked: {
+        addListener: vi.fn(),
+      },
+      setBadgeText: vi.fn(),
+      setBadgeBackgroundColor: vi.fn(),
+    },
+    tabs: {
+      sendMessage: vi.fn(),
+    },
+  }
+  return { default: mockBrowser }
 })
 
 beforeEach(() => {
