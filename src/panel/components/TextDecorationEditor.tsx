@@ -1,3 +1,5 @@
+import { toHexColor } from '../utils/color'
+
 interface TextDecorationEditorProps {
   selector: string
   styles: Record<string, string>
@@ -52,7 +54,7 @@ export function TextDecorationEditor({ selector, styles, onUpdate }: TextDecorat
               type="color"
               aria-label="Text decoration color picker"
               className="w-8 h-8 p-0 border border-slate-200 rounded cursor-pointer shrink-0"
-              value={styles['text-decoration-color'] ? styles['text-decoration-color'].replace(/^#/, '').match(/^[0-9a-f]{6}$/i) ? styles['text-decoration-color'] : '#000000' : '#000000'}
+              value={toHexColor(styles['text-decoration-color'])}
               onChange={(e) => onUpdate(selector, 'text-decoration-color', e.target.value)}
             />
             <input

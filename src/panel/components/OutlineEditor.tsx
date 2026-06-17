@@ -1,3 +1,5 @@
+import { toHexColor } from '../utils/color'
+
 interface OutlineEditorProps {
   selector: string
   styles: Record<string, string>
@@ -55,7 +57,7 @@ export function OutlineEditor({ selector, styles, onUpdate }: OutlineEditorProps
             type="color"
             aria-label="Outline color picker"
             className="w-8 h-8 p-0 border border-slate-200 rounded cursor-pointer shrink-0"
-            value={styles['outline-color'] ? (/^#[0-9a-f]{6}$/i.test(styles['outline-color']) ? styles['outline-color'] : '#000000') : '#000000'}
+            value={toHexColor(styles['outline-color'])}
             onChange={(e) => onUpdate(selector, 'outline-color', e.target.value)}
           />
           <input
