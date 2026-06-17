@@ -1,3 +1,5 @@
+import { toHexColor } from '../utils/color'
+
 interface ColorPickerProps {
   selector: string
   styles: Record<string, string>
@@ -15,7 +17,7 @@ export function ColorPicker({ selector, styles, onUpdate }: ColorPickerProps) {
           type="color"
           aria-label="Text color picker"
           className="w-8 h-8 p-0 border border-slate-200 rounded cursor-pointer"
-          value={styles['color'] ?? '#000000'}
+          value={toHexColor(styles['color'])}
           onChange={(e) => onUpdate(selector, 'color', e.target.value)}
         />
         <input
@@ -34,7 +36,7 @@ export function ColorPicker({ selector, styles, onUpdate }: ColorPickerProps) {
           type="color"
           aria-label="Background color picker"
           className="w-8 h-8 p-0 border border-slate-200 rounded cursor-pointer"
-          value={styles['background-color'] ?? '#ffffff'}
+          value={toHexColor(styles['background-color'])}
           onChange={(e) => onUpdate(selector, 'background-color', e.target.value)}
         />
         <input

@@ -115,6 +115,26 @@ async function openPanel(selector: string, styles: Record<string, Record<string,
     }
   }) as EventListener
   window.addEventListener('novastyle:update-classes', updateClassesHandler)
+
+  window.addEventListener('novastyle:select-element', ((e: CustomEvent) => {
+    const { selector: sel } = e.detail as { selector: string }
+    const target = document.querySelector(sel) as HTMLElement | null
+    if (!target) return
+    lastClicked = target
+    const selector = computeSelector(target)
+    const styles = extractStyles(target)
+    const classes = Array.from(target.classList)
+    drawHighlighter(highlighter!, target)
+    updateStylesheet(styles)
+    if (panelMountPoint) {
+      panelMountPoint.dataset.novastyleSelector = selector
+      panelMountPoint.dataset.novastyleStyles = JSON.stringify(styles)
+      panelMountPoint.dataset.novastyleClasses = JSON.stringify(classes)
+      panelMountPoint.dispatchEvent(new CustomEvent('novastyle:update-element', {
+        detail: { selector, styles, classes },
+      }))
+    }
+  }) as EventListener)
 }
 
 function closePanel() {

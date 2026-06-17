@@ -1,3 +1,5 @@
+import { toHexColor } from '../utils/color'
+
 interface SvgEditorProps {
   selector: string
   styles: Record<string, string>
@@ -15,7 +17,7 @@ export function SvgEditor({ selector, styles, onUpdate }: SvgEditorProps) {
               type="color"
               aria-label="Fill color picker"
               className="w-8 h-8 p-0 border border-slate-200 rounded cursor-pointer shrink-0"
-              value={/^#[0-9a-f]{6}$/i.test(styles['fill'] ?? '') ? styles['fill']! : '#000000'}
+              value={toHexColor(styles['fill'])}
               onChange={(e) => onUpdate(selector, 'fill', e.target.value)}
             />
             <input
@@ -35,7 +37,7 @@ export function SvgEditor({ selector, styles, onUpdate }: SvgEditorProps) {
               type="color"
               aria-label="Stroke color picker"
               className="w-8 h-8 p-0 border border-slate-200 rounded cursor-pointer shrink-0"
-              value={/^#[0-9a-f]{6}$/i.test(styles['stroke'] ?? '') ? styles['stroke']! : '#000000'}
+              value={toHexColor(styles['stroke'])}
               onChange={(e) => onUpdate(selector, 'stroke', e.target.value)}
             />
             <input
