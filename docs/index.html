@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovaStyle — Visual CSS Editor</title>
+  <meta name="description" content="Visually edit any webpage's CSS — spacing, typography, colors, and layout. A cross-browser extension for developers and designers." />
+  <link rel="icon" type="image/svg+xml" href="../public/favicon.svg" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #1e293b; background: #f8fafc; }
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    header { background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff; padding: 3rem 1.5rem; text-align: center; }
+    header svg { width: 64px; height: 64px; margin-bottom: 1rem; }
+    header h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; }
+    header p { font-size: 1.125rem; opacity: .85; max-width: 540px; margin: .75rem auto 0; }
+    .container { max-width: 720px; margin: 0 auto; padding: 3rem 1.5rem; flex: 1; }
+    h2 { font-size: 1.5rem; font-weight: 700; margin: 2rem 0 .75rem; }
+    h2:first-child { margin-top: 0; }
+    ul { list-style: disc; padding-left: 1.5rem; }
+    li { margin-bottom: .5rem; }
+    a { color: #2563eb; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .feature { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; }
+    .feature h3 { font-size: 1.1rem; margin-bottom: .4rem; }
+    .feature p { font-size: .9rem; color: #64748b; }
+    .badge { display: inline-block; background: #e2e8f0; color: #475569; font-size: .75rem; font-weight: 600; padding: .2rem .6rem; border-radius: 999px; margin-right: .35rem; }
+    .badge.blue { background: #dbeafe; color: #2563eb; }
+    .badge.purple { background: #ede9fe; color: #7c3aed; }
+    footer { text-align: center; padding: 2rem 1.5rem; font-size: .875rem; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+    footer a { color: #64748b; }
+  </style>
+</head>
+<body>
+
+<header>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff" stop-opacity=".95"/><stop offset="100%" stop-color="#fff" stop-opacity=".7"/></linearGradient></defs>
+    <rect width="64" height="64" rx="13" fill="url(#hg)"/>
+    <path d="M16 48V16l20 26V16" stroke="#2563eb" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M48 18l-6 8" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+    <path d="M52 16l-4 4" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+  </svg>
+  <h1>NovaStyle</h1>
+  <p>Visually edit any webpage's CSS — spacing, typography, colors, and layout. Install once, tweak anything.</p>
+</header>
+
+<main class="container">
+  <h2>What is NovaStyle?</h2>
+  <p>NovaStyle is a cross-browser extension that lets developers, designers, and low-code creators modify any webpage's CSS visually. Click elements to inspect and edit their styles in real time through an intuitive control panel, then export clean, production-ready CSS overrides.</p>
+
+  <div class="features">
+    <div class="feature">
+      <h3>📐 Box Model</h3>
+      <p>Drag margins, borders, and padding — see pixel-perfect layout changes in real time.</p>
+    </div>
+    <div class="feature">
+      <h3>🔤 Typography</h3>
+      <p>Tweak font-size, line-height, letter-spacing, weight, and alignment with sliders and dropdowns.</p>
+    </div>
+    <div class="feature">
+      <h3>🎨 Color &amp; Backgrounds</h3>
+      <p>Interactive color pickers for text and background colors with immediate preview.</p>
+    </div>
+    <div class="feature">
+      <h3>💾 Persistent Storage</h3>
+      <p>Styles auto-save per domain and reload on subsequent visits. No data leaves your browser.</p>
+    </div>
+    <div class="feature">
+      <h3>📋 Export CSS</h3>
+      <p>Copy formatted CSS override code to your clipboard for use in your project.</p>
+    </div>
+    <div class="feature">
+      <h3>🌐 Cross-Browser</h3>
+      <p>Works in Chrome, Firefox, Edge, and Safari with full feature parity.</p>
+    </div>
+  </div>
+
+  <h2>Install</h2>
+  <ul>
+    <li><a href="https://chrome.google.com/webstore" target="_blank" rel="noopener">Chrome Web Store</a></li>
+    <li><a href="https://addons.mozilla.org" target="_blank" rel="noopener">Firefox Add-ons</a></li>
+  </ul>
+  <p style="margin-top:.75rem;font-size:.9rem;color:#64748b;">
+    <span class="badge blue">MV3</span>
+    <span class="badge purple">MIT License</span>
+    <span class="badge">v1.3.5</span>
+  </p>
+
+  <h2>Source</h2>
+  <p><a href="https://github.com/chesteralan/NovaStyle" target="_blank" rel="noopener">github.com/chesteralan/NovaStyle</a></p>
+</main>
+
+<footer>
+  <a href="privacy-policy.html">Privacy Policy</a> &nbsp;·&nbsp; &copy; 2026 NovaStyle
+</footer>
+
+</body>
+</html>
