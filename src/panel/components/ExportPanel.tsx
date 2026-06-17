@@ -39,7 +39,9 @@ export function ExportPanel({ styles }: ExportPanelProps) {
       >
         {copied ? 'Copied!' : 'Copy to Clipboard'}
       </button>
-      <div aria-live="polite" className="sr-only">{copied ? 'CSS copied to clipboard' : ''}</div>
+      <div aria-live="polite" className="sr-only">
+        {copied ? 'CSS copied to clipboard' : ''}
+      </div>
     </div>
   )
 }

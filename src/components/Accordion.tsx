@@ -20,11 +20,7 @@ export function Accordion({
   const [open, setOpen] = useState(defaultOpen ?? false)
   return (
     <div className="border border-slate-200 rounded-lg overflow-hidden">
-      <button
-        className={headerClass}
-        onClick={() => setOpen(!open)}
-        aria-expanded={open}
-      >
+      <button className={headerClass} onClick={() => setOpen(!open)} aria-expanded={open}>
         <span className={titleClass}>{title}</span>
         <span className="text-slate-400 text-xs select-none">{open ? '▾' : '▸'}</span>
       </button>

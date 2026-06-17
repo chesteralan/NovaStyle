@@ -1,0 +1,6 @@
+dist
+node_modules
+*.png
+*.svg
+*.ico
+yarn.lock

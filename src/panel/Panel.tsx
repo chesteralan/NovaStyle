@@ -37,10 +37,10 @@ type PanelPosition = 'right' | 'left' | 'bottom' | 'top'
 const POSITION_CYCLE: PanelPosition[] = ['right', 'left', 'bottom', 'top']
 
 const positionClasses: Record<PanelPosition, string> = {
-  right: 'fixed top-0 right-0 w-80 h-full border-l border-slate-300',
-  left: 'fixed top-0 left-0 w-80 h-full border-r border-slate-300',
-  bottom: 'fixed bottom-0 left-0 right-0 w-full h-80 border-t border-slate-300',
-  top: 'fixed top-0 left-0 right-0 w-full h-80 border-b border-slate-300',
+  right: 'fixed top-0 right-0 w-80 h-full border-l border-solid border-slate-300',
+  left: 'fixed top-0 left-0 w-80 h-full border-r border-solid border-slate-300',
+  bottom: 'fixed bottom-0 left-0 right-0 w-full h-80 border-t border-solid border-slate-300',
+  top: 'fixed top-0 left-0 right-0 w-full h-80 border-b border-solid border-slate-300',
 }
 
 const nextIcon: Record<PanelPosition, string> = {
@@ -66,7 +66,21 @@ interface PanelProps {
   theme?: NovaStyleSettings['theme']
 }
 
-export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo, onRedo, onAddClass, onRemoveClass, onSelectElement, defaultPosition, visibleEditors, theme }: PanelProps) {
+export function Panel({
+  selector,
+  styles,
+  classNames,
+  onUpdate,
+  onClose,
+  onUndo,
+  onRedo,
+  onAddClass,
+  onRemoveClass,
+  onSelectElement,
+  defaultPosition,
+  visibleEditors,
+  theme,
+}: PanelProps) {
   const [position, setPosition] = useState<PanelPosition>(defaultPosition ?? 'right')
   const [floating, setFloating] = useState(false)
   const [floatPos, setFloatPos] = useState({ top: 60, left: 0 })
@@ -106,7 +120,7 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
       dockTo(POSITION_CYCLE[0])
       return
     }
-    setPosition(prev => {
+    setPosition((prev) => {
       const idx = POSITION_CYCLE.indexOf(prev)
       return POSITION_CYCLE[(idx + 1) % POSITION_CYCLE.length]
     })
@@ -125,54 +139,60 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
     }
   }
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (!floating) return
-    dragRef.current = {
-      startX: e.clientX,
-      startY: e.clientY,
-      startTop: floatPos.top,
-      startLeft: floatPos.left,
-    }
-    const onMove = (ev: MouseEvent) => {
-      if (!dragRef.current) return
-      const dx = ev.clientX - dragRef.current.startX
-      const dy = ev.clientY - dragRef.current.startY
-      setFloatPos({
-        top: Math.max(0, dragRef.current.startTop + dy),
-        left: Math.max(0, dragRef.current.startLeft + dx),
-      })
-    }
-    const onUp = () => {
-      dragRef.current = null
-      document.removeEventListener('mousemove', onMove)
-      document.removeEventListener('mouseup', onUp)
-    }
-    document.addEventListener('mousemove', onMove)
-    document.addEventListener('mouseup', onUp)
-  }, [floating, floatPos])
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (!floating) return
+      dragRef.current = {
+        startX: e.clientX,
+        startY: e.clientY,
+        startTop: floatPos.top,
+        startLeft: floatPos.left,
+      }
+      const onMove = (ev: MouseEvent) => {
+        if (!dragRef.current) return
+        const dx = ev.clientX - dragRef.current.startX
+        const dy = ev.clientY - dragRef.current.startY
+        setFloatPos({
+          top: Math.max(0, dragRef.current.startTop + dy),
+          left: Math.max(0, dragRef.current.startLeft + dx),
+        })
+      }
+      const onUp = () => {
+        dragRef.current = null
+        document.removeEventListener('mousemove', onMove)
+        document.removeEventListener('mouseup', onUp)
+      }
+      document.addEventListener('mousemove', onMove)
+      document.addEventListener('mouseup', onUp)
+    },
+    [floating, floatPos],
+  )
 
-  const handleResizeStart = useCallback((e: React.MouseEvent) => {
-    if (!floating) return
-    e.stopPropagation()
-    e.preventDefault()
-    resizeRef.current = {
-      startY: e.clientY,
-      startHeight: floatHeight ?? Math.round(window.innerHeight * 0.5),
-    }
-    const onMove = (ev: MouseEvent) => {
-      if (!resizeRef.current) return
-      const dh = ev.clientY - resizeRef.current.startY
-      const newHeight = Math.max(200, Math.min(window.innerHeight * 0.9, resizeRef.current.startHeight + dh))
-      setFloatHeight(newHeight)
-    }
-    const onUp = () => {
-      resizeRef.current = null
-      document.removeEventListener('mousemove', onMove)
-      document.removeEventListener('mouseup', onUp)
-    }
-    document.addEventListener('mousemove', onMove)
-    document.addEventListener('mouseup', onUp)
-  }, [floating, floatHeight])
+  const handleResizeStart = useCallback(
+    (e: React.MouseEvent) => {
+      if (!floating) return
+      e.stopPropagation()
+      e.preventDefault()
+      resizeRef.current = {
+        startY: e.clientY,
+        startHeight: floatHeight ?? Math.round(window.innerHeight * 0.5),
+      }
+      const onMove = (ev: MouseEvent) => {
+        if (!resizeRef.current) return
+        const dh = ev.clientY - resizeRef.current.startY
+        const newHeight = Math.max(200, Math.min(window.innerHeight * 0.9, resizeRef.current.startHeight + dh))
+        setFloatHeight(newHeight)
+      }
+      const onUp = () => {
+        resizeRef.current = null
+        document.removeEventListener('mousemove', onMove)
+        document.removeEventListener('mouseup', onUp)
+      }
+      document.addEventListener('mousemove', onMove)
+      document.addEventListener('mouseup', onUp)
+    },
+    [floating, floatHeight],
+  )
 
   let containerStyle: React.CSSProperties = { zIndex: 2147483646 }
   if (floating) {
@@ -188,7 +208,7 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
 
   return (
     <div
-      className={`${floating ? 'bg-white shadow-lg rounded-lg border border-slate-300 flex flex-col' : `${positionClasses[position]} bg-white shadow-lg flex flex-col`}${theme === 'dark' ? ' dark' : ''}`}
+      className={`${floating ? 'bg-white shadow-lg rounded-lg border border-solid border-slate-300 flex flex-col' : `${positionClasses[position]} bg-white shadow-lg flex flex-col`}${theme === 'dark' ? ' dark' : ''}`}
       style={containerStyle}
       role="dialog"
       aria-label="NovaStyle style editor"
@@ -197,7 +217,9 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
         className={`flex items-center justify-between px-4 py-3 border-b border-slate-200 ${floating ? 'cursor-grab active:cursor-grabbing select-none' : ''}`}
         onMouseDown={handleMouseDown}
       >
-        <span className="text-sm font-semibold text-slate-700" id="novastyle-heading">NovaStyle</span>
+        <span className="text-sm font-semibold text-slate-700" id="novastyle-heading">
+          NovaStyle
+        </span>
         <div className="flex items-center gap-1">
           <button
             className="text-slate-400 hover:text-slate-600 text-sm leading-none px-1"
@@ -229,144 +251,144 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
 
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         <ErrorBoundary>
-        {visibleEditors?.classInput !== false && (
-          <Accordion title="Classes">
-            <ClassInput classes={classNames} onAdd={onAddClass} onRemove={onRemoveClass} />
+          {visibleEditors?.classInput !== false && (
+            <Accordion title="Classes">
+              <ClassInput classes={classNames} onAdd={onAddClass} onRemove={onRemoveClass} />
+            </Accordion>
+          )}
+          {visibleEditors?.boxModel !== false && (
+            <Accordion title="Spacing">
+              <BoxModel selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.typography !== false && (
+            <Accordion title="Typography">
+              <Typography selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.colorPicker !== false && (
+            <Accordion title="Colors">
+              <ColorPicker selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.layoutEditor !== false && (
+            <Accordion title="Layout">
+              <LayoutEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.flexboxEditor !== false && (
+            <Accordion title="Flexbox">
+              <FlexboxEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.transformEditor !== false && (
+            <Accordion title="Transform">
+              <TransformEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.gridEditor !== false && (
+            <Accordion title="Grid">
+              <GridEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.backgroundEditor !== false && (
+            <Accordion title="Background">
+              <BackgroundEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.filterEditor !== false && (
+            <Accordion title="Filter">
+              <FilterEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.textDecorationEditor !== false && (
+            <Accordion title="Text Decoration">
+              <TextDecorationEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.outlineEditor !== false && (
+            <Accordion title="Outline">
+              <OutlineEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.cursorEditor !== false && (
+            <Accordion title="Interaction">
+              <CursorEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.animationEditor !== false && (
+            <Accordion title="Animation & Transition">
+              <AnimationEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.listEditor !== false && (
+            <Accordion title="List">
+              <ListEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.tableEditor !== false && (
+            <Accordion title="Table">
+              <TableEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.columnsEditor !== false && (
+            <Accordion title="Columns">
+              <ColumnsEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.scrollSnapEditor !== false && (
+            <Accordion title="Scroll Snap">
+              <ScrollSnapEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.svgEditor !== false && (
+            <Accordion title="SVG">
+              <SvgEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.writingModeEditor !== false && (
+            <Accordion title="Writing Mode">
+              <WritingModeEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.borderEditor !== false && (
+            <Accordion title="Border">
+              <BorderEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.effectsEditor !== false && (
+            <Accordion title="Effects">
+              <EffectsEditor selector={selector} onUpdate={onUpdate} />
+            </Accordion>
+          )}
+          {visibleEditors?.colorPalette !== false && (
+            <Accordion title="Palette">
+              <ColorPalette />
+            </Accordion>
+          )}
+          {visibleEditors?.fontDetector !== false && (
+            <Accordion title="Fonts">
+              <FontDetector />
+            </Accordion>
+          )}
+          {visibleEditors?.classResolver !== false && (
+            <Accordion title="Class Resolver">
+              <ClassResolver classNames={classNames} />
+            </Accordion>
+          )}
+          {visibleEditors?.responsivePreview !== false && (
+            <Accordion title="Responsive">
+              <ResponsivePreview />
+            </Accordion>
+          )}
+          {visibleEditors?.customCSS !== false && (
+            <Accordion title="Custom CSS">
+              <CustomCSS />
+            </Accordion>
+          )}
+          <Accordion title="Export">
+            <ExportPanel styles={styles} />
           </Accordion>
-        )}
-        {visibleEditors?.boxModel !== false && (
-          <Accordion title="Spacing">
-            <BoxModel selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.typography !== false && (
-          <Accordion title="Typography">
-            <Typography selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.colorPicker !== false && (
-          <Accordion title="Colors">
-            <ColorPicker selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.layoutEditor !== false && (
-          <Accordion title="Layout">
-            <LayoutEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.flexboxEditor !== false && (
-          <Accordion title="Flexbox">
-            <FlexboxEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.transformEditor !== false && (
-          <Accordion title="Transform">
-            <TransformEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.gridEditor !== false && (
-          <Accordion title="Grid">
-            <GridEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.backgroundEditor !== false && (
-          <Accordion title="Background">
-            <BackgroundEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.filterEditor !== false && (
-          <Accordion title="Filter">
-            <FilterEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.textDecorationEditor !== false && (
-          <Accordion title="Text Decoration">
-            <TextDecorationEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.outlineEditor !== false && (
-          <Accordion title="Outline">
-            <OutlineEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.cursorEditor !== false && (
-          <Accordion title="Interaction">
-            <CursorEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.animationEditor !== false && (
-          <Accordion title="Animation & Transition">
-            <AnimationEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.listEditor !== false && (
-          <Accordion title="List">
-            <ListEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.tableEditor !== false && (
-          <Accordion title="Table">
-            <TableEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.columnsEditor !== false && (
-          <Accordion title="Columns">
-            <ColumnsEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.scrollSnapEditor !== false && (
-          <Accordion title="Scroll Snap">
-            <ScrollSnapEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.svgEditor !== false && (
-          <Accordion title="SVG">
-            <SvgEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.writingModeEditor !== false && (
-          <Accordion title="Writing Mode">
-            <WritingModeEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.borderEditor !== false && (
-          <Accordion title="Border">
-            <BorderEditor selector={selector} styles={styles[selector] ?? {}} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.effectsEditor !== false && (
-          <Accordion title="Effects">
-            <EffectsEditor selector={selector} onUpdate={onUpdate} />
-          </Accordion>
-        )}
-        {visibleEditors?.colorPalette !== false && (
-          <Accordion title="Palette">
-            <ColorPalette />
-          </Accordion>
-        )}
-        {visibleEditors?.fontDetector !== false && (
-          <Accordion title="Fonts">
-            <FontDetector />
-          </Accordion>
-        )}
-        {visibleEditors?.classResolver !== false && (
-          <Accordion title="Class Resolver">
-            <ClassResolver classNames={classNames} />
-          </Accordion>
-        )}
-        {visibleEditors?.responsivePreview !== false && (
-          <Accordion title="Responsive">
-            <ResponsivePreview />
-          </Accordion>
-        )}
-        {visibleEditors?.customCSS !== false && (
-          <Accordion title="Custom CSS">
-            <CustomCSS />
-          </Accordion>
-        )}
-        <Accordion title="Export">
-          <ExportPanel styles={styles} />
-        </Accordion>
         </ErrorBoundary>
       </div>
       {floating && (

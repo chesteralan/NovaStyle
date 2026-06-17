@@ -21,7 +21,11 @@ export function WritingModeEditor({ selector, styles, onUpdate }: WritingModeEdi
             onChange={(e) => onUpdate(selector, 'writing-mode', e.target.value)}
           >
             <option value="">—</option>
-            {WRITING_MODES.map((m) => <option key={m} value={m}>{m}</option>)}
+            {WRITING_MODES.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
           </select>
         </div>
         <div>
@@ -33,7 +37,11 @@ export function WritingModeEditor({ selector, styles, onUpdate }: WritingModeEdi
             onChange={(e) => onUpdate(selector, 'direction', e.target.value)}
           >
             <option value="">—</option>
-            {DIRECTIONS.map((d) => <option key={d} value={d}>{d}</option>)}
+            {DIRECTIONS.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -48,7 +56,11 @@ export function WritingModeEditor({ selector, styles, onUpdate }: WritingModeEdi
             onChange={(e) => onUpdate(selector, 'text-orientation', e.target.value)}
           >
             <option value="">—</option>
-            {ORIENTATIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+            {ORIENTATIONS.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
           </select>
         </div>
         <div>

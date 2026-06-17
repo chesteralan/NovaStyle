@@ -52,7 +52,12 @@ try {
   if (mountPoint) {
     createRoot(mountPoint).render(
       <StrictMode>
-        <App selector={getSelector()} initialStyles={initialStyles} initialClasses={initialClasses} settings={settings} />
+        <App
+          selector={getSelector()}
+          initialStyles={initialStyles}
+          initialClasses={initialClasses}
+          settings={settings}
+        />
       </StrictMode>,
     )
   }

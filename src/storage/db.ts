@@ -1,3 +1,5 @@
+import browser from 'webextension-polyfill'
+import type { Storage } from 'webextension-polyfill'
 import type { StyleMap, NovaStyleSettings } from '@/types'
 
 const STORAGE_KEY_PREFIX = 'novastyle_'
@@ -54,8 +56,8 @@ const defaultSettings: NovaStyleSettings = {
   ignoredDomains: [],
 }
 
-function storageArea(useSync?: boolean): chrome.storage.StorageArea {
-  return useSync ? chrome.storage.sync : chrome.storage.local
+function storageArea(useSync?: boolean): Storage.StorageArea {
+  return useSync ? browser.storage.sync : browser.storage.local
 }
 
 function domainKey(domain: string): string {
@@ -68,7 +70,7 @@ function enabledKey(domain: string): string {
 
 export async function getSettings(): Promise<NovaStyleSettings> {
   try {
-    const result = await chrome.storage.local.get(SETTINGS_KEY)
+    const result = await browser.storage.local.get(SETTINGS_KEY)
     const saved = (result as Record<string, Partial<NovaStyleSettings> | undefined>)[SETTINGS_KEY]
     if (!saved) return { ...defaultSettings }
     return {
@@ -88,7 +90,8 @@ export async function getSettings(): Promise<NovaStyleSettings> {
         gridEditor: saved.visibleEditors?.gridEditor ?? defaultSettings.visibleEditors.gridEditor,
         backgroundEditor: saved.visibleEditors?.backgroundEditor ?? defaultSettings.visibleEditors.backgroundEditor,
         filterEditor: saved.visibleEditors?.filterEditor ?? defaultSettings.visibleEditors.filterEditor,
-        textDecorationEditor: saved.visibleEditors?.textDecorationEditor ?? defaultSettings.visibleEditors.textDecorationEditor,
+        textDecorationEditor:
+          saved.visibleEditors?.textDecorationEditor ?? defaultSettings.visibleEditors.textDecorationEditor,
         outlineEditor: saved.visibleEditors?.outlineEditor ?? defaultSettings.visibleEditors.outlineEditor,
         cursorEditor: saved.visibleEditors?.cursorEditor ?? defaultSettings.visibleEditors.cursorEditor,
         animationEditor: saved.visibleEditors?.animationEditor ?? defaultSettings.visibleEditors.animationEditor,
@@ -114,7 +117,7 @@ export async function getSettings(): Promise<NovaStyleSettings> {
 
 export async function saveSettings(settings: NovaStyleSettings): Promise<void> {
   try {
-    await chrome.storage.local.set({ [SETTINGS_KEY]: settings })
+    await browser.storage.local.set({ [SETTINGS_KEY]: settings })
   } catch {
     // storage write failed silently
   }
@@ -134,7 +137,7 @@ export async function getStyles(domain: string): Promise<StyleMap | null> {
 export async function saveStyles(domain: string, styles: StyleMap): Promise<void> {
   const key = domainKey(domain)
   try {
-    const existing = await chrome.storage.local.get(key)
+    const existing = await browser.storage.local.get(key)
     const existingData = (existing as Record<string, StoredData | undefined>)[key]
     const versions = existingData?.versions ?? []
     if (existingData?.styles && Object.keys(existingData.styles).length > 0) {
@@ -142,10 +145,10 @@ export async function saveStyles(domain: string, styles: StyleMap): Promise<void
     }
     if (versions.length > 20) versions.splice(0, versions.length - 20)
     const data = { styles, updatedAt: Date.now(), versions }
-    await chrome.storage.local.set({ [key]: data } satisfies Record<string, StoredData>)
+    await browser.storage.local.set({ [key]: data } satisfies Record<string, StoredData>)
     const settings = await getSettings()
     if (settings.useSync) {
-      await chrome.storage.sync.set({ [key]: { styles, updatedAt: Date.now() } })
+      await browser.storage.sync.set({ [key]: { styles, updatedAt: Date.now() } })
     }
   } catch {
     // storage write failed silently
@@ -155,8 +158,8 @@ export async function saveStyles(domain: string, styles: StyleMap): Promise<void
 export async function removeDomainStyles(domain: string): Promise<void> {
   const key = domainKey(domain)
   try {
-    await chrome.storage.local.remove(key)
-    await chrome.storage.sync.remove(key)
+    await browser.storage.local.remove(key)
+    await browser.storage.sync.remove(key)
   } catch {
     // storage remove failed silently
   }
@@ -165,7 +168,7 @@ export async function removeDomainStyles(domain: string): Promise<void> {
 export async function isDomainEnabled(domain: string): Promise<boolean> {
   try {
     const key = enabledKey(domain)
-    const result = await chrome.storage.local.get(key)
+    const result = await browser.storage.local.get(key)
     const val = (result as Record<string, boolean | undefined>)[key]
     return val !== false
   } catch {
@@ -175,7 +178,7 @@ export async function isDomainEnabled(domain: string): Promise<boolean> {
 
 export async function setDomainEnabled(domain: string, enabled: boolean): Promise<void> {
   try {
-    await chrome.storage.local.set({ [enabledKey(domain)]: enabled })
+    await browser.storage.local.set({ [enabledKey(domain)]: enabled })
   } catch {
     // silent
   }
@@ -192,7 +195,7 @@ export async function isDomainIgnored(domain: string): Promise<boolean> {
 
 export async function getAllDomains(): Promise<string[]> {
   try {
-    const all = await chrome.storage.local.get(null)
+    const all = await browser.storage.local.get(null)
     return Object.keys(all as Record<string, unknown>)
       .filter((k) => k.startsWith(STORAGE_KEY_PREFIX))
       .map((k) => k.slice(STORAGE_KEY_PREFIX.length))
@@ -203,7 +206,7 @@ export async function getAllDomains(): Promise<string[]> {
 
 export async function getAllDomainsWithMeta(): Promise<DomainMeta[]> {
   try {
-    const all = await chrome.storage.local.get(null)
+    const all = await browser.storage.local.get(null)
     return (Object.entries(all as Record<string, unknown>) as [string, StoredData][])
       .filter(([k]) => k.startsWith(STORAGE_KEY_PREFIX))
       .map(([k, v]) => ({
@@ -216,12 +219,10 @@ export async function getAllDomainsWithMeta(): Promise<DomainMeta[]> {
   }
 }
 
-export async function getVersions(
-  domain: string,
-): Promise<Array<{ styles: StyleMap; timestamp: number }>> {
+export async function getVersions(domain: string): Promise<Array<{ styles: StyleMap; timestamp: number }>> {
   const key = STORAGE_KEY_PREFIX + domain
   try {
-    const result = await chrome.storage.local.get(key)
+    const result = await browser.storage.local.get(key)
     const data = (result as Record<string, StoredData | undefined>)[key]
     return data?.versions ?? []
   } catch {
@@ -232,7 +233,7 @@ export async function getVersions(
 export async function revertToVersion(domain: string, index: number): Promise<void> {
   const key = STORAGE_KEY_PREFIX + domain
   try {
-    const result = await chrome.storage.local.get(key)
+    const result = await browser.storage.local.get(key)
     const data = (result as Record<string, StoredData | undefined>)[key]
     if (!data?.versions?.length || !data.versions[index]) return
     const target = data.versions[index]
@@ -240,7 +241,7 @@ export async function revertToVersion(domain: string, index: number): Promise<vo
     if (data.versions.length > 20) data.versions.splice(0, data.versions.length - 20)
     data.styles = target.styles
     data.updatedAt = Date.now()
-    await chrome.storage.local.set({ [key]: data })
+    await browser.storage.local.set({ [key]: data })
   } catch {
     // silent
   }
@@ -250,13 +251,13 @@ export async function renameDomain(oldDomain: string, newDomain: string): Promis
   const oldKey = STORAGE_KEY_PREFIX + oldDomain
   const newKey = STORAGE_KEY_PREFIX + newDomain
   try {
-    const result = await chrome.storage.local.get(oldKey)
+    const result = await browser.storage.local.get(oldKey)
     const data = (result as Record<string, StoredData | undefined>)[oldKey]
     if (!data) return false
-    const existing = await chrome.storage.local.get(newKey) as Record<string, unknown>
+    const existing = (await browser.storage.local.get(newKey)) as Record<string, unknown>
     if (existing[newKey]) return false
-    await chrome.storage.local.set({ [newKey]: data })
-    await chrome.storage.local.remove(oldKey)
+    await browser.storage.local.set({ [newKey]: data })
+    await browser.storage.local.remove(oldKey)
     return true
   } catch {
     return false

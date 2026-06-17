@@ -7,6 +7,7 @@
 **Goal**: Functional point-and-click CSS editor with persistence and export.
 
 **Deliverables**:
+
 - [ ] Element inspector with bounding-box highlighter
 - [ ] Unique CSS selector computation (ID, class, nth-child fallback)
 - [ ] Visual panel with Box Model (margin/border/padding) editor
@@ -122,11 +123,11 @@ These ideas need validation. They are captured here for future prioritization.
 
 ## Technical Debt & Refactoring Tracking
 
-| Area | Issue | Target |
-|---|---|---|
-| Selector engine | `nth-child` fallback may break on DOM changes | v1.1.0 |
-| Stylesheet injection | Full rebuild on every change → O(n) per edit | v1.1.0 (add diff/patch) |
-| Build config | Multi-entry Vite config needs manual rollup config | v1.0.0 |
-| Testing | No test infrastructure yet | v1.1.0 |
-| Types | `StyleMap` type shared across modules, but not yet extracted | v1.0.0 |
-| Panel resizing | Currently fixed-width; user feedback needed for sizing | v2.0.0 |
+| Area                 | Issue                                                        | Target                  |
+| -------------------- | ------------------------------------------------------------ | ----------------------- |
+| Selector engine      | `nth-child` fallback may break on DOM changes                | v1.1.0                  |
+| Stylesheet injection | Full rebuild on every change → O(n) per edit                 | v1.1.0 (add diff/patch) |
+| Build config         | Multi-entry Vite config needs manual rollup config           | v1.0.0                  |
+| Testing              | No test infrastructure yet                                   | v1.1.0                  |
+| Types                | `StyleMap` type shared across modules, but not yet extracted | v1.0.0                  |
+| Panel resizing       | Currently fixed-width; user feedback needed for sizing       | v2.0.0                  |

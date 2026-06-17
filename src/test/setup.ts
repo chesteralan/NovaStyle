@@ -6,25 +6,23 @@ const __syncStore: Record<string, unknown> = {}
 
 function makeStorage(store: Record<string, unknown>) {
   return {
-    get: vi.fn(
-      (keys?: string | string[] | Record<string, unknown> | null) => {
-        if (keys === null) return Promise.resolve({ ...store })
-        if (typeof keys === 'object' && !Array.isArray(keys)) {
-          const result: Record<string, unknown> = {}
-          for (const key of Object.keys(keys)) {
-            if (key in store) result[key] = store[key]
-            else result[key] = (keys as Record<string, unknown>)[key]
-          }
-          return Promise.resolve(result)
-        }
-        const keysArr = Array.isArray(keys) ? keys : [keys]
+    get: vi.fn((keys?: string | string[] | Record<string, unknown> | null) => {
+      if (keys === null) return Promise.resolve({ ...store })
+      if (typeof keys === 'object' && !Array.isArray(keys)) {
         const result: Record<string, unknown> = {}
-        for (const key of keysArr) {
-          if (key != null && key in store) result[key] = store[key]
+        for (const key of Object.keys(keys)) {
+          if (key in store) result[key] = store[key]
+          else result[key] = (keys as Record<string, unknown>)[key]
         }
         return Promise.resolve(result)
-      },
-    ),
+      }
+      const keysArr = Array.isArray(keys) ? keys : [keys]
+      const result: Record<string, unknown> = {}
+      for (const key of keysArr) {
+        if (key != null && key in store) result[key] = store[key]
+      }
+      return Promise.resolve(result)
+    }),
     set: vi.fn((items: Record<string, unknown>) => {
       Object.assign(store, items)
       return Promise.resolve()
@@ -37,13 +35,32 @@ function makeStorage(store: Record<string, unknown>) {
   }
 }
 
-Object.assign(globalThis, {
-  chrome: {
+vi.mock('webextension-polyfill', () => {
+  const mockLocalStorage = makeStorage(__localStore)
+  const mockSyncStorage = makeStorage(__syncStore)
+  const mockBrowser = {
     storage: {
-      local: makeStorage(__localStore),
-      sync: makeStorage(__syncStore),
+      local: mockLocalStorage,
+      sync: mockSyncStorage,
     },
-  },
+    runtime: {
+      getURL: vi.fn((path: string) => `mock://${path}`),
+      onMessage: {
+        addListener: vi.fn(),
+      },
+    },
+    action: {
+      onClicked: {
+        addListener: vi.fn(),
+      },
+      setBadgeText: vi.fn(),
+      setBadgeBackgroundColor: vi.fn(),
+    },
+    tabs: {
+      sendMessage: vi.fn(),
+    },
+  }
+  return { default: mockBrowser }
 })
 
 beforeEach(() => {

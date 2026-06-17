@@ -1,4 +1,11 @@
-import { createHighlighter, drawHighlighter, hideHighlighter, destroyHighlighter, type HighlighterState } from './highlighter'
+import browser from 'webextension-polyfill'
+import {
+  createHighlighter,
+  drawHighlighter,
+  hideHighlighter,
+  destroyHighlighter,
+  type HighlighterState,
+} from './highlighter'
 import { computeSelector, extractStyles } from './selector'
 import { updateStylesheet, clearStylesheet } from './injector'
 import { getSettings, saveStyles } from '@/storage/db'
@@ -8,8 +15,10 @@ const CURRENT_DOMAIN = window.location.hostname.replace(/^www\./, '')
 
 getSettings().then((settings) => {
   if ((settings.ignoredDomains ?? []).includes(CURRENT_DOMAIN)) return
-  chrome.storage.local.get(CURRENT_DOMAIN).then((result: unknown) => {
-    const data = (result as Record<string, { styles?: Record<string, Record<string, string>> } | undefined>)[CURRENT_DOMAIN]
+  browser.storage.local.get(CURRENT_DOMAIN).then((result) => {
+    const data = (result as Record<string, { styles?: Record<string, Record<string, string>> } | undefined>)[
+      CURRENT_DOMAIN
+    ]
     if (data?.styles) {
       updateStylesheet(data.styles)
     }
@@ -54,9 +63,11 @@ function onClick(e: MouseEvent) {
     panelMountPoint.dataset.novastyleSelector = selector
     panelMountPoint.dataset.novastyleStyles = JSON.stringify(styles)
     panelMountPoint.dataset.novastyleClasses = JSON.stringify(classes)
-    panelMountPoint.dispatchEvent(new CustomEvent('novastyle:update-element', {
-      detail: { selector, styles, classes },
-    }))
+    panelMountPoint.dispatchEvent(
+      new CustomEvent('novastyle:update-element', {
+        detail: { selector, styles, classes },
+      }),
+    )
   } else {
     openPanel(selector, styles).catch(() => {})
   }
@@ -82,7 +93,7 @@ async function openPanel(selector: string, styles: Record<string, Record<string,
 
   const cssLink = document.createElement('link')
   cssLink.rel = 'stylesheet'
-  cssLink.href = chrome.runtime.getURL('assets/panel.css')
+  cssLink.href = browser.runtime.getURL('assets/panel.css')
   shadow.appendChild(cssLink)
 
   const domain = window.location.hostname.replace(/^www\./, '')
@@ -91,7 +102,7 @@ async function openPanel(selector: string, styles: Record<string, Record<string,
   mountPoint.dataset.novastyleSettings = JSON.stringify(settings)
 
   const mainScript = document.createElement('script')
-  mainScript.src = chrome.runtime.getURL('assets/panel.js')
+  mainScript.src = browser.runtime.getURL('assets/panel.js')
   mainScript.onerror = () => {
     console.error('NovaStyle: Failed to load panel script')
     closePanel()
@@ -130,9 +141,11 @@ async function openPanel(selector: string, styles: Record<string, Record<string,
       panelMountPoint.dataset.novastyleSelector = selector
       panelMountPoint.dataset.novastyleStyles = JSON.stringify(styles)
       panelMountPoint.dataset.novastyleClasses = JSON.stringify(classes)
-      panelMountPoint.dispatchEvent(new CustomEvent('novastyle:update-element', {
-        detail: { selector, styles, classes },
-      }))
+      panelMountPoint.dispatchEvent(
+        new CustomEvent('novastyle:update-element', {
+          detail: { selector, styles, classes },
+        }),
+      )
     }
   }) as EventListener)
 }
@@ -175,7 +188,7 @@ function deactivate() {
   closePanel()
 }
 
-chrome.runtime.onMessage.addListener((message: unknown) => {
+browser.runtime.onMessage.addListener((message: unknown) => {
   const msg = message as ContentMessage
   if (msg.type === 'TOGGLE_EXTENSION') {
     if (msg.state === 'active') activate()

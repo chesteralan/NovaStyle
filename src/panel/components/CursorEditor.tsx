@@ -5,10 +5,30 @@ interface CursorEditorProps {
 }
 
 const CURSOR_OPTIONS = [
-  'auto', 'default', 'pointer', 'grab', 'grabbing', 'crosshair', 'move',
-  'text', 'vertical-text', 'alias', 'copy', 'no-drop', 'not-allowed',
-  'wait', 'progress', 'help', 'zoom-in', 'zoom-out',
-  'col-resize', 'row-resize', 'n-resize', 's-resize', 'e-resize', 'w-resize',
+  'auto',
+  'default',
+  'pointer',
+  'grab',
+  'grabbing',
+  'crosshair',
+  'move',
+  'text',
+  'vertical-text',
+  'alias',
+  'copy',
+  'no-drop',
+  'not-allowed',
+  'wait',
+  'progress',
+  'help',
+  'zoom-in',
+  'zoom-out',
+  'col-resize',
+  'row-resize',
+  'n-resize',
+  's-resize',
+  'e-resize',
+  'w-resize',
 ]
 
 export function CursorEditor({ selector, styles, onUpdate }: CursorEditorProps) {
@@ -25,7 +45,9 @@ export function CursorEditor({ selector, styles, onUpdate }: CursorEditorProps) 
           >
             <option value="">—</option>
             {CURSOR_OPTIONS.map((c) => (
-              <option key={c} value={c}>{c}</option>
+              <option key={c} value={c}>
+                {c}
+              </option>
             ))}
           </select>
         </div>

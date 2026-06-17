@@ -26,7 +26,9 @@ export function TextDecorationEditor({ selector, styles, onUpdate }: TextDecorat
           >
             <option value="">—</option>
             {DECORATION_LINES.map((d) => (
-              <option key={d} value={d}>{d}</option>
+              <option key={d} value={d}>
+                {d}
+              </option>
             ))}
           </select>
         </div>
@@ -40,7 +42,9 @@ export function TextDecorationEditor({ selector, styles, onUpdate }: TextDecorat
           >
             <option value="">—</option>
             {DECORATION_STYLES.map((s) => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
         </div>
@@ -77,7 +81,9 @@ export function TextDecorationEditor({ selector, styles, onUpdate }: TextDecorat
           >
             <option value="">—</option>
             {TEXT_TRANSFORMS.map((t) => (
-              <option key={t} value={t}>{t}</option>
+              <option key={t} value={t}>
+                {t}
+              </option>
             ))}
           </select>
         </div>
@@ -106,7 +112,9 @@ export function TextDecorationEditor({ selector, styles, onUpdate }: TextDecorat
           >
             <option value="">—</option>
             {WHITE_SPACE_OPTIONS.map((w) => (
-              <option key={w} value={w}>{w}</option>
+              <option key={w} value={w}>
+                {w}
+              </option>
             ))}
           </select>
         </div>
@@ -120,7 +128,9 @@ export function TextDecorationEditor({ selector, styles, onUpdate }: TextDecorat
           >
             <option value="">—</option>
             {WORD_BREAK_OPTIONS.map((b) => (
-              <option key={b} value={b}>{b}</option>
+              <option key={b} value={b}>
+                {b}
+              </option>
             ))}
           </select>
         </div>

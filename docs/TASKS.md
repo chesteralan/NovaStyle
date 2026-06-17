@@ -1,6 +1,7 @@
 # NovaStyle — Project Tasks
 
 ## Legend
+
 - [x] done
 - [ ] pending
 - [-] blocked
@@ -8,6 +9,7 @@
 ---
 
 ## Phase 1: Polish & UX
+
 - [x] Move button to cycle panel position (right → left → bottom → top)
 - [x] Extension icons (16, 32, 48, 128)
 - [x] Options page with accordion sections
@@ -21,6 +23,7 @@
 - [x] Persist visible editors preference
 
 ## Phase 2: Style Management
+
 - [x] Search/filter domains in options page
 - [x] Bulk select and delete domains
 - [x] Export individual domain styles (not just all)
@@ -29,6 +32,7 @@
 - [x] Sort domains (by name, last edited)
 
 ## Phase 3: Editor Improvements
+
 - [x] Undo/redo keyboard shortcuts (Ctrl+Z / Ctrl+Shift+Z)
 - [x] Escape key to close panel
 - [x] Dark mode for panel UI
@@ -39,6 +43,7 @@
 - [x] Responsive preview mode toggle
 
 ## Phase 4: Advanced Features
+
 - [x] Sync via `chrome.storage.sync` (cross-device)
 - [x] Preset themes (e.g., "dark reader", "high contrast", "sepia")
 - [x] Per-domain enable/disable toggle
@@ -49,6 +54,7 @@
 - [x] Export as Chrome extension / bookmarklet
 
 ## Phase 5: CI & DX
+
 - [x] GitHub Actions CI (lint, typecheck, test, build, bundle size, Sentry sourcemaps)
 - [x] Add E2E tests with Playwright (config + extension-loading specs)
 - [x] Add bundle size monitoring (`scripts/check-size.mjs`)
@@ -65,6 +71,7 @@
 ## Phase R: Refactor & Code Audit
 
 ### High Priority
+
 - [x] **R1**: Fix duplicate `<Accordion title="Palette">` in `Panel.tsx:221,233` — renders `ColorPalette` twice, doubling DOM queries
 - [x] **R2**: Fix Tailwind class filter regex in `selector.ts:8` — `/^[a-z]{2,}-\d+/` incorrectly filters `flex-1`, `p-4`, `text-sm`, `gap-2`, etc.
 - [x] **R3**: Fix CustomCSS module-level singleton leak in `CustomCSS.tsx:3` — stale `<style>` persists when panel remounts; use ref + cleanup
@@ -74,6 +81,7 @@
 - [x] **R7**: Extract shared `Accordion` component from Panel/Options into `src/components/Accordion.tsx`
 
 ### Medium Priority
+
 - [x] **R8**: Replace Zustand full-store subscription in `App.tsx:15` with selectors/`useShallow` to avoid unnecessary re-renders
 - [x] **R9**: Add unit-aware input handling in `Typography.tsx:53` / `BoxModel.tsx:23` / `BorderEditor.tsx:19` — only append `px` when value is purely numeric
 - [-] **R10**: Fix `computeSelector` empty-id edge case in `selector.ts:6` — `el.id` being falsy (`""`) already skips the branch correctly; no fix needed
@@ -85,6 +93,7 @@
 - [x] **R16**: Add `aria-expanded` to accordion toggle buttons in Panel and Options
 
 ### Low Priority
+
 - [-] **R17**: Fix trailing space in dark mode className in `Panel.tsx:161` — template `? ' dark' : ''` does not produce trailing space; no bug
 - [x] **R18**: Remove unnecessary optional chaining on `window.location?.hostname` in `ExportPanel.tsx:13`
 - [x] **R19**: Add `value` bindings to all editor inputs — BoxModel (12 inputs), Typography (4 inputs + 1 select), ColorPicker (4 inputs), BorderEditor (3 inputs + 1 select) display current style values
@@ -117,6 +126,7 @@
 - [x] **E14**: Create `CursorEditor` — `cursor`, `pointer-events`, `user-select`, `resize`, `visibility`, `float`, `object-fit`, `object-position`
 
 ### Future Editor Ideas
+
 - [ ] **E15**: Animation/Transition editor — `transition-property`, `transition-duration`, `transition-timing-function`, `animation`
 - [ ] **E16**: List editor — `list-style-type`, `list-style-position`, `list-style-image`
 - [ ] **E17**: Table editor — `border-collapse`, `border-spacing`, `table-layout`, `caption-side`

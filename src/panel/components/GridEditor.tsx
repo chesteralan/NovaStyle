@@ -79,7 +79,9 @@ export function GridEditor({ selector, styles, onUpdate }: GridEditorProps) {
           >
             <option value="">—</option>
             {AUTO_FLOW_OPTIONS.map((o) => (
-              <option key={o} value={o}>{o}</option>
+              <option key={o} value={o}>
+                {o}
+              </option>
             ))}
           </select>
         </div>
@@ -107,7 +109,9 @@ export function GridEditor({ selector, styles, onUpdate }: GridEditorProps) {
           >
             <option value="">—</option>
             {ALIGN_OPTIONS.map((a) => (
-              <option key={a} value={a}>{a}</option>
+              <option key={a} value={a}>
+                {a}
+              </option>
             ))}
           </select>
         </div>
@@ -121,7 +125,9 @@ export function GridEditor({ selector, styles, onUpdate }: GridEditorProps) {
           >
             <option value="">—</option>
             {ALIGN_OPTIONS.map((a) => (
-              <option key={a} value={a}>{a}</option>
+              <option key={a} value={a}>
+                {a}
+              </option>
             ))}
           </select>
         </div>

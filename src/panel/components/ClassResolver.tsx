@@ -1,11 +1,26 @@
 import { useMemo } from 'react'
 
 const COMMON_PROPS = [
-  'display', 'position', 'width', 'height', 'margin', 'padding',
-  'color', 'background-color', 'font-size', 'font-weight', 'font-family',
-  'border', 'border-radius', 'box-shadow', 'opacity',
-  'flex-direction', 'align-items', 'justify-content',
-  'grid-template-columns', 'gap',
+  'display',
+  'position',
+  'width',
+  'height',
+  'margin',
+  'padding',
+  'color',
+  'background-color',
+  'font-size',
+  'font-weight',
+  'font-family',
+  'border',
+  'border-radius',
+  'box-shadow',
+  'opacity',
+  'flex-direction',
+  'align-items',
+  'justify-content',
+  'grid-template-columns',
+  'gap',
 ]
 
 interface ClassResolverProps {
@@ -16,7 +31,8 @@ export function ClassResolver({ classNames }: ClassResolverProps) {
   const resolved = useMemo(() => {
     if (classNames.length === 0) return []
     const temp = document.createElement('div')
-    temp.style.cssText = 'position:absolute!important;visibility:hidden!important;pointer-events:none!important;top:-9999px!important'
+    temp.style.cssText =
+      'position:absolute!important;visibility:hidden!important;pointer-events:none!important;top:-9999px!important'
     document.body.appendChild(temp)
     const entries = classNames.map((cls) => {
       temp.className = cls
@@ -47,11 +63,13 @@ export function ClassResolver({ classNames }: ClassResolverProps) {
               .{className}
             </div>
             <div className="px-2 py-1 space-y-0.5">
-              {Object.entries(props).slice(0, 8).map(([prop, val]) => (
-                <div key={prop} className="text-[11px] font-mono text-slate-500">
-                  <span className="text-slate-400">{prop}:</span> {val}
-                </div>
-              ))}
+              {Object.entries(props)
+                .slice(0, 8)
+                .map(([prop, val]) => (
+                  <div key={prop} className="text-[11px] font-mono text-slate-500">
+                    <span className="text-slate-400">{prop}:</span> {val}
+                  </div>
+                ))}
               {Object.keys(props).length > 8 && (
                 <div className="text-[11px] text-slate-400">+{Object.keys(props).length - 8} more</div>
               )}

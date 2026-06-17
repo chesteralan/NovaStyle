@@ -16,12 +16,7 @@ export function SelectorBreadcrumb({ selector, onSelect }: SelectorBreadcrumbPro
         return (
           <span key={i} className="flex items-center gap-0.5">
             {i > 0 && <span className="text-slate-300 mx-0.5">&gt;</span>}
-            <Segment
-              label={seg}
-              selector={partial}
-              isLast={isLast}
-              onSelect={onSelect}
-            />
+            <Segment label={seg} selector={partial} isLast={isLast} onSelect={onSelect} />
           </span>
         )
       })}

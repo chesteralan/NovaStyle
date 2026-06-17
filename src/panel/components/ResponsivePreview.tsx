@@ -14,8 +14,7 @@ export function ResponsivePreview() {
   const originalViewportRef = useRef<string | null>(null)
 
   useEffect(() => {
-    originalViewportRef.current =
-      document.querySelector<HTMLMetaElement>('meta[name="viewport"]')?.content ?? null
+    originalViewportRef.current = document.querySelector<HTMLMetaElement>('meta[name="viewport"]')?.content ?? null
     return () => {
       const meta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]')
       if (meta) {
@@ -49,7 +48,10 @@ export function ResponsivePreview() {
           <button
             key={p.label}
             className={`text-xs px-2 py-1 rounded border ${active && vp.label === p.label ? 'bg-blue-100 border-blue-400 text-blue-700' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}
-            onClick={() => { setVp(p); apply(p.width) }}
+            onClick={() => {
+              setVp(p)
+              apply(p.width)
+            }}
             aria-label={`Set viewport to ${p.label}`}
           >
             {p.label}
@@ -82,7 +84,11 @@ export function ResponsivePreview() {
           </button>
         )}
       </div>
-      {active && <div className="text-xs text-green-600">Viewport: {vp.label} ({vp.width}px)</div>}
+      {active && (
+        <div className="text-xs text-green-600">
+          Viewport: {vp.label} ({vp.width}px)
+        </div>
+      )}
     </div>
   )
 }

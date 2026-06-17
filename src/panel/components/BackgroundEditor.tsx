@@ -35,7 +35,9 @@ export function BackgroundEditor({ selector, styles, onUpdate }: BackgroundEdito
           >
             <option value="">—</option>
             {SIZE_OPTIONS.map((s) => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
         </div>
@@ -49,7 +51,9 @@ export function BackgroundEditor({ selector, styles, onUpdate }: BackgroundEdito
           >
             <option value="">—</option>
             {REPEAT_OPTIONS.map((r) => (
-              <option key={r} value={r}>{r}</option>
+              <option key={r} value={r}>
+                {r}
+              </option>
             ))}
           </select>
         </div>
@@ -77,7 +81,9 @@ export function BackgroundEditor({ selector, styles, onUpdate }: BackgroundEdito
           >
             <option value="">—</option>
             {ATTACHMENT_OPTIONS.map((a) => (
-              <option key={a} value={a}>{a}</option>
+              <option key={a} value={a}>
+                {a}
+              </option>
             ))}
           </select>
         </div>
@@ -94,7 +100,9 @@ export function BackgroundEditor({ selector, styles, onUpdate }: BackgroundEdito
           >
             <option value="">—</option>
             {CLIP_OPTIONS.map((c) => (
-              <option key={c} value={c}>{c}</option>
+              <option key={c} value={c}>
+                {c}
+              </option>
             ))}
           </select>
         </div>
@@ -108,7 +116,9 @@ export function BackgroundEditor({ selector, styles, onUpdate }: BackgroundEdito
           >
             <option value="">—</option>
             {CLIP_OPTIONS.map((c) => (
-              <option key={c} value={c}>{c}</option>
+              <option key={c} value={c}>
+                {c}
+              </option>
             ))}
           </select>
         </div>

@@ -78,15 +78,15 @@ novastyle/
 
 **Key Files**:
 
-| File | Purpose |
-|---|---|
-| `vite.config.ts` | Multi-entry Vite build for Chrome Extension |
-| `public/manifest.json` | Extension manifest (copied verbatim to dist/) |
+| File                            | Purpose                                            |
+| ------------------------------- | -------------------------------------------------- |
+| `vite.config.ts`                | Multi-entry Vite build for Chrome Extension        |
+| `public/manifest.json`          | Extension manifest (copied verbatim to dist/)      |
 | `src/content/content-script.ts` | Injected into host page; orchestrates all features |
-| `src/panel/App.tsx` | React root mounted into Shadow DOM |
-| `src/storage/db.ts` | Persistence layer |
-| `src/exporter/exporter.ts` | CSS code generation |
-| `src/types/index.ts` | `StyleMap` and shared interfaces |
+| `src/panel/App.tsx`             | React root mounted into Shadow DOM                 |
+| `src/storage/db.ts`             | Persistence layer                                  |
+| `src/exporter/exporter.ts`      | CSS code generation                                |
+| `src/types/index.ts`            | `StyleMap` and shared interfaces                   |
 
 ---
 
@@ -103,7 +103,7 @@ import path from 'path'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
-    alias: { '@': path.resolve(__dirname, './src') }
+    alias: { '@': path.resolve(__dirname, './src') },
   },
   build: {
     rollupOptions: {
@@ -116,11 +116,11 @@ export default defineConfig({
         entryFileNames: 'assets/[name].js',
         chunkFileNames: 'assets/[name].js',
         assetFileNames: 'assets/[name][extname]',
-      }
+      },
     },
     outDir: 'dist',
-    emptyOutDir: true
-  }
+    emptyOutDir: true,
+  },
 })
 ```
 
@@ -131,6 +131,7 @@ export default defineConfig({
 ## Loading in Chrome for Development
 
 1. **Build the extension**:
+
    ```bash
    npm run build
    ```
@@ -232,12 +233,12 @@ npm run test -- --watch
 
 ### Testing Strategy
 
-| Layer | Tool | What to Test |
-|---|---|---|
-| Unit | Vitest | `selector.ts`, `exporter.ts`, `storage/db.ts` |
-| Component | Vitest + React Testing Library | Panel components (BoxModel, Typography) |
-| Integration | Playwright (Chrome extension mode) | Full content script → panel → storage flow |
-| E2E | Playwright | Load page, activate extension, edit style, verify persistence |
+| Layer       | Tool                               | What to Test                                                  |
+| ----------- | ---------------------------------- | ------------------------------------------------------------- |
+| Unit        | Vitest                             | `selector.ts`, `exporter.ts`, `storage/db.ts`                 |
+| Component   | Vitest + React Testing Library     | Panel components (BoxModel, Typography)                       |
+| Integration | Playwright (Chrome extension mode) | Full content script → panel → storage flow                    |
+| E2E         | Playwright                         | Load page, activate extension, edit style, verify persistence |
 
 ---
 

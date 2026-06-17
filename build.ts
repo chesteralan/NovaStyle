@@ -27,7 +27,7 @@ const resolveAlias = {
 const basePlugins = [react(), tailwindcss()]
 
 async function main() {
-  console.log('Building ESM entries (options, service-worker)...')
+  console.log('Building ESM entries (options)...')
   await build({
     resolve: resolveAlias,
     plugins: [...basePlugins, stripCrossorigin()],
@@ -37,7 +37,6 @@ async function main() {
       rollupOptions: {
         input: {
           options: resolve(__dirname, 'options.html'),
-          'service-worker': resolve(__dirname, 'src/background/service-worker.ts'),
         },
         output: {
           entryFileNames: 'assets/[name].js',
@@ -60,6 +59,27 @@ async function main() {
     writeFileSync(optionsHtml, html)
     console.log('Renamed assets/style.css → assets/options.css')
   }
+
+  console.log('Building service-worker as IIFE (cross-browser)...')
+  await build({
+    resolve: resolveAlias,
+    plugins: basePlugins,
+    build: {
+      cssCodeSplit: false,
+      rollupOptions: {
+        input: {
+          'service-worker': resolve(__dirname, 'src/background/service-worker.ts'),
+        },
+        output: {
+          entryFileNames: 'assets/[name].js',
+          assetFileNames: 'assets/[name][extname]',
+          format: 'iife',
+        },
+      },
+      outDir: 'dist',
+      emptyOutDir: false,
+    },
+  } satisfies UserConfig)
 
   console.log('Building content-script as IIFE...')
   await build({
