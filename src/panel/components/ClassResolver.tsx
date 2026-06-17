@@ -15,10 +15,12 @@ interface ClassResolverProps {
 export function ClassResolver({ classNames }: ClassResolverProps) {
   const resolved = useMemo(() => {
     if (classNames.length === 0) return []
-    const el = document.createElement('div')
+    const temp = document.createElement('div')
+    temp.style.cssText = 'position:absolute!important;visibility:hidden!important;pointer-events:none!important;top:-9999px!important'
+    document.body.appendChild(temp)
     const entries = classNames.map((cls) => {
-      el.className = cls
-      const style = getComputedStyle(el)
+      temp.className = cls
+      const style = getComputedStyle(temp)
       const props: Record<string, string> = {}
       for (const prop of COMMON_PROPS) {
         const val = style.getPropertyValue(prop)
@@ -28,12 +30,15 @@ export function ClassResolver({ classNames }: ClassResolverProps) {
       }
       return { className: cls, props }
     })
+    document.body.removeChild(temp)
     return entries.filter((e) => Object.keys(e.props).length > 0)
   }, [classNames])
 
   return (
     <div className="space-y-2">
-      {resolved.length === 0 ? (
+      {classNames.length === 0 ? (
+        <div className="text-xs text-slate-400">No classes on selected element.</div>
+      ) : resolved.length === 0 ? (
         <div className="text-xs text-slate-400">No computed styles found for current classes.</div>
       ) : (
         resolved.map(({ className, props }) => (

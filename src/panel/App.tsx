@@ -83,6 +83,12 @@ export function App({ selector: initialSelector, initialStyles, initialClasses, 
     useStyleStore.getState().removeClass(cls)
   }, [])
 
+  const onSelectElement = useCallback((sel: string) => {
+    window.dispatchEvent(new CustomEvent('novastyle:select-element', {
+      detail: { selector: sel },
+    }))
+  }, [])
+
   return (
     <Panel
       selector={currentSelector}
@@ -94,6 +100,7 @@ export function App({ selector: initialSelector, initialStyles, initialClasses, 
       onRedo={onRedo}
       onAddClass={onAddClass}
       onRemoveClass={onRemoveClass}
+      onSelectElement={onSelectElement}
       defaultPosition={settings?.defaultPosition}
       visibleEditors={settings?.visibleEditors}
       theme={settings?.theme}

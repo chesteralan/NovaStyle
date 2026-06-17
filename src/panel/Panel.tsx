@@ -26,6 +26,7 @@ import { CustomCSS } from './components/CustomCSS'
 import { ColorPalette } from './components/ColorPalette'
 import { ResponsivePreview } from './components/ResponsivePreview'
 import { ClassResolver } from './components/ClassResolver'
+import { SelectorBreadcrumb } from './components/SelectorBreadcrumb'
 import { ExportPanel } from './components/ExportPanel'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { Accordion } from '@/components/Accordion'
@@ -59,12 +60,13 @@ interface PanelProps {
   onRedo: () => void
   onAddClass: (className: string) => void
   onRemoveClass: (className: string) => void
+  onSelectElement: (selector: string) => void
   defaultPosition?: PanelPosition
   visibleEditors?: NovaStyleSettings['visibleEditors']
   theme?: NovaStyleSettings['theme']
 }
 
-export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo, onRedo, onAddClass, onRemoveClass, defaultPosition, visibleEditors, theme }: PanelProps) {
+export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo, onRedo, onAddClass, onRemoveClass, onSelectElement, defaultPosition, visibleEditors, theme }: PanelProps) {
   const [position, setPosition] = useState<PanelPosition>(defaultPosition ?? 'right')
   const [floating, setFloating] = useState(false)
   const [floatPos, setFloatPos] = useState({ top: 60, left: 0 })
@@ -222,7 +224,7 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
       </div>
 
       <div className="px-4 py-2 border-b border-slate-200">
-        <code className="text-[11px] text-slate-500 font-mono break-all" aria-label="Selected element selector">{selector}</code>
+        <SelectorBreadcrumb selector={selector} onSelect={onSelectElement} />
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
