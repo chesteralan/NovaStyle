@@ -180,8 +180,7 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
       top: floatPos.top,
       left: floatPos.left,
       width: '20rem',
-      maxHeight: '50vh',
-      height: floatHeight ?? '50vh',
+      height: floatHeight ?? Math.round(window.innerHeight * 0.5),
     }
   }
 
