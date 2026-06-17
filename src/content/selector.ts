@@ -3,27 +3,39 @@ import type { StyleMap } from '@/types'
 const DATA_ATTRS = ['data-testid', 'data-cy', 'data-test'] as const
 
 export function computeSelector(el: Element): string {
-  if (el.id) return `#${CSS.escape(el.id)}`
+  const tag = el.tagName.toLowerCase()
+
+  let local = tag
+
+  if (el.id) {
+    local += `#${CSS.escape(el.id)}`
+  }
 
   const classes = Array.from(el.classList).filter(
     (c) => !/^[a-z]+-[a-z0-9]{8,}$/i.test(c) && !/^css-[a-z0-9]{5,}$/i.test(c),
   )
-  if (classes.length > 0) {
-    const unique = classes.find(
-      (c) => document.querySelectorAll(`.${CSS.escape(c)}`).length === 1,
-    )
-    if (unique) return `.${CSS.escape(unique)}`
+  for (const cls of classes) {
+    local += `.${CSS.escape(cls)}`
+  }
+
+  if (local !== tag && document.querySelectorAll(local).length === 1) {
+    return local
   }
 
   for (const attr of DATA_ATTRS) {
     const val = el.getAttribute(attr)
-    if (val) return `[${attr}="${CSS.escape(val)}"]`
+    if (val) {
+      const withAttr = `${local}[${attr}="${CSS.escape(val)}"]`
+      if (document.querySelectorAll(withAttr).length === 1) {
+        return withAttr
+      }
+    }
   }
 
-  return buildNthPath(el)
+  return buildNthPath(el, local)
 }
 
-function buildNthPath(el: Element): string {
+function buildNthPath(el: Element, local: string): string {
   const segments: string[] = []
   let current: Element | null = el
   while (current && current !== document.body && current.parentElement) {
@@ -33,13 +45,20 @@ function buildNthPath(el: Element): string {
     const siblings = (Array.from(parent.children) as Element[]).filter(
       (s) => s.tagName === currentTag,
     )
+    let segment: string
     if (siblings.length > 1) {
       const index = siblings.indexOf(current) + 1
-      segments.unshift(`${tag}:nth-child(${index})`)
+      segment = `${tag}:nth-child(${index})`
     } else {
-      segments.unshift(tag)
+      segment = tag
     }
+    segments.unshift(segment)
     current = parent
+  }
+  if (segments.length > 0) {
+    const leaf = segments[segments.length - 1]
+    const nthMatch = leaf.match(/:nth-child\(\d+\)/)
+    segments[segments.length - 1] = nthMatch ? `${local}${nthMatch[0]}` : local
   }
   return segments.join(' > ')
 }
