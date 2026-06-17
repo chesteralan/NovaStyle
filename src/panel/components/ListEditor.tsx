@@ -4,7 +4,23 @@ interface ListEditorProps {
   onUpdate: (selector: string, property: string, value: string) => void
 }
 
-const TYPES = ['none', 'disc', 'circle', 'square', 'decimal', 'decimal-leading-zero', 'lower-roman', 'upper-roman', 'lower-alpha', 'upper-alpha', 'lower-greek', 'lower-latin', 'upper-latin', 'armenian', 'georgian']
+const TYPES = [
+  'none',
+  'disc',
+  'circle',
+  'square',
+  'decimal',
+  'decimal-leading-zero',
+  'lower-roman',
+  'upper-roman',
+  'lower-alpha',
+  'upper-alpha',
+  'lower-greek',
+  'lower-latin',
+  'upper-latin',
+  'armenian',
+  'georgian',
+]
 const POSITIONS = ['outside', 'inside']
 
 export function ListEditor({ selector, styles, onUpdate }: ListEditorProps) {
@@ -20,7 +36,11 @@ export function ListEditor({ selector, styles, onUpdate }: ListEditorProps) {
             onChange={(e) => onUpdate(selector, 'list-style-type', e.target.value)}
           >
             <option value="">—</option>
-            {TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+            {TYPES.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
           </select>
         </div>
         <div>
@@ -32,7 +52,11 @@ export function ListEditor({ selector, styles, onUpdate }: ListEditorProps) {
             onChange={(e) => onUpdate(selector, 'list-style-position', e.target.value)}
           >
             <option value="">—</option>
-            {POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
+            {POSITIONS.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
           </select>
         </div>
       </div>

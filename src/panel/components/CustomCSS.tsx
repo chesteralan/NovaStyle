@@ -30,10 +30,13 @@ export function CustomCSS() {
     return sheetRef.current
   }, [])
 
-  const apply = useCallback((value: string) => {
-    const sheet = ensureSheet()
-    sheet.textContent = sanitizeCSS(value)
-  }, [ensureSheet])
+  const apply = useCallback(
+    (value: string) => {
+      const sheet = ensureSheet()
+      sheet.textContent = sanitizeCSS(value)
+    },
+    [ensureSheet],
+  )
 
   const handleChange = (value: string) => {
     setCss(value)
@@ -67,12 +70,7 @@ export function CustomCSS() {
       />
       <div className="flex items-center justify-between">
         <label className="flex items-center gap-1.5 text-xs text-slate-600 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={active}
-            onChange={toggleActive}
-            className="rounded border-slate-300"
-          />
+          <input type="checkbox" checked={active} onChange={toggleActive} className="rounded border-slate-300" />
           Enable
         </label>
         {saved && <span className="text-xs text-green-600">Applied</span>}

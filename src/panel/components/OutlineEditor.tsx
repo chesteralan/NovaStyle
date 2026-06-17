@@ -44,7 +44,9 @@ export function OutlineEditor({ selector, styles, onUpdate }: OutlineEditorProps
           >
             <option value="">—</option>
             {STYLE_OPTIONS.map((s) => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
         </div>

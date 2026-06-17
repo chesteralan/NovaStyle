@@ -1,5 +1,11 @@
 import browser from 'webextension-polyfill'
-import { createHighlighter, drawHighlighter, hideHighlighter, destroyHighlighter, type HighlighterState } from './highlighter'
+import {
+  createHighlighter,
+  drawHighlighter,
+  hideHighlighter,
+  destroyHighlighter,
+  type HighlighterState,
+} from './highlighter'
 import { computeSelector, extractStyles } from './selector'
 import { updateStylesheet, clearStylesheet } from './injector'
 import { getSettings, saveStyles } from '@/storage/db'
@@ -10,7 +16,9 @@ const CURRENT_DOMAIN = window.location.hostname.replace(/^www\./, '')
 getSettings().then((settings) => {
   if ((settings.ignoredDomains ?? []).includes(CURRENT_DOMAIN)) return
   browser.storage.local.get(CURRENT_DOMAIN).then((result) => {
-    const data = (result as Record<string, { styles?: Record<string, Record<string, string>> } | undefined>)[CURRENT_DOMAIN]
+    const data = (result as Record<string, { styles?: Record<string, Record<string, string>> } | undefined>)[
+      CURRENT_DOMAIN
+    ]
     if (data?.styles) {
       updateStylesheet(data.styles)
     }
@@ -55,9 +63,11 @@ function onClick(e: MouseEvent) {
     panelMountPoint.dataset.novastyleSelector = selector
     panelMountPoint.dataset.novastyleStyles = JSON.stringify(styles)
     panelMountPoint.dataset.novastyleClasses = JSON.stringify(classes)
-    panelMountPoint.dispatchEvent(new CustomEvent('novastyle:update-element', {
-      detail: { selector, styles, classes },
-    }))
+    panelMountPoint.dispatchEvent(
+      new CustomEvent('novastyle:update-element', {
+        detail: { selector, styles, classes },
+      }),
+    )
   } else {
     openPanel(selector, styles).catch(() => {})
   }
@@ -131,9 +141,11 @@ async function openPanel(selector: string, styles: Record<string, Record<string,
       panelMountPoint.dataset.novastyleSelector = selector
       panelMountPoint.dataset.novastyleStyles = JSON.stringify(styles)
       panelMountPoint.dataset.novastyleClasses = JSON.stringify(classes)
-      panelMountPoint.dispatchEvent(new CustomEvent('novastyle:update-element', {
-        detail: { selector, styles, classes },
-      }))
+      panelMountPoint.dispatchEvent(
+        new CustomEvent('novastyle:update-element', {
+          detail: { selector, styles, classes },
+        }),
+      )
     }
   }) as EventListener)
 }

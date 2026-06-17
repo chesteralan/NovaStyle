@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill'
-import type { Tabs, Runtime } from 'webextension-polyfill'
+import type { Tabs } from 'webextension-polyfill'
 import type { BackgroundMessage } from '@/types'
 
 const tabStates = new Map<number, 'active' | 'inactive'>()
@@ -26,7 +26,7 @@ browser.action.onClicked.addListener(async (tab: Tabs.Tab) => {
   })
 })
 
-browser.runtime.onMessage.addListener((message: unknown, _sender: Runtime.MessageSender) => {
+browser.runtime.onMessage.addListener((message: unknown) => {
   const msg = message as BackgroundMessage
   if (msg.type === 'GET_STYLES') {
     return browser.storage.local.get(msg.domain).then((result) => {

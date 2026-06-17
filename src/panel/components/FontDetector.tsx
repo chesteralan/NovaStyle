@@ -47,8 +47,12 @@ export function FontDetector() {
       ) : (
         fonts.slice(0, 15).map((f) => (
           <div key={f.family} className="flex items-center justify-between">
-            <span className="text-xs text-slate-700 truncate" style={{ fontFamily: f.family }}>{f.family}</span>
-            <span className="text-xs text-slate-400 shrink-0 ml-2">{f.count} el{f.sizes.length > 0 ? ` · ${f.sizes[0]}` : ''}</span>
+            <span className="text-xs text-slate-700 truncate" style={{ fontFamily: f.family }}>
+              {f.family}
+            </span>
+            <span className="text-xs text-slate-400 shrink-0 ml-2">
+              {f.count} el{f.sizes.length > 0 ? ` · ${f.sizes[0]}` : ''}
+            </span>
           </div>
         ))
       )}

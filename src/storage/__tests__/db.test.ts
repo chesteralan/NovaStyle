@@ -37,7 +37,7 @@ describe('getStyles / saveStyles', () => {
   it('saves with timestamp', async () => {
     await saveStyles('example.com', { '.b': { color: 'blue' } })
     const key = 'novastyle_example.com'
-    const data = await browser.storage.local.get(key) as Record<string, any>
+    const data = (await browser.storage.local.get(key)) as Record<string, { updatedAt: number; styles: unknown }>
     expect(data[key].updatedAt).toBeGreaterThan(0)
     expect(typeof data[key].updatedAt).toBe('number')
   })

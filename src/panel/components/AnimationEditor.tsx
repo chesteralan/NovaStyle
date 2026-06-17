@@ -47,7 +47,11 @@ export function AnimationEditor({ selector, styles, onUpdate }: AnimationEditorP
               onChange={(e) => onUpdate(selector, 'transition-timing-function', e.target.value)}
             >
               <option value="">—</option>
-              {TIMING_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+              {TIMING_OPTIONS.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
             </select>
           </div>
           <div>
@@ -111,7 +115,11 @@ export function AnimationEditor({ selector, styles, onUpdate }: AnimationEditorP
               onChange={(e) => onUpdate(selector, 'animation-direction', e.target.value)}
             >
               <option value="">—</option>
-              {DIRECTION_OPTIONS.map((d) => <option key={d} value={d}>{d}</option>)}
+              {DIRECTION_OPTIONS.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
             </select>
           </div>
           <div>
@@ -123,7 +131,11 @@ export function AnimationEditor({ selector, styles, onUpdate }: AnimationEditorP
               onChange={(e) => onUpdate(selector, 'animation-fill-mode', e.target.value)}
             >
               <option value="">—</option>
-              {FILL_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}
+              {FILL_OPTIONS.map((f) => (
+                <option key={f} value={f}>
+                  {f}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -137,7 +149,11 @@ export function AnimationEditor({ selector, styles, onUpdate }: AnimationEditorP
               onChange={(e) => onUpdate(selector, 'animation-timing-function', e.target.value)}
             >
               <option value="">—</option>
-              {TIMING_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+              {TIMING_OPTIONS.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
             </select>
           </div>
           <div>

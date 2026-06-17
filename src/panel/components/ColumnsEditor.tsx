@@ -69,7 +69,11 @@ export function ColumnsEditor({ selector, styles, onUpdate }: ColumnsEditorProps
             onChange={(e) => onUpdate(selector, 'column-rule-style', e.target.value)}
           >
             <option value="">—</option>
-            {RULE_STYLES.map((s) => <option key={s} value={s}>{s}</option>)}
+            {RULE_STYLES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
           </select>
         </div>
         <div>

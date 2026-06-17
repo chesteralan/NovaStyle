@@ -33,7 +33,11 @@ export function App({ selector: initialSelector, initialStyles, initialClasses, 
     if (!mountPoint) return
 
     const handler = ((e: Event) => {
-      const { selector: sel, styles, classes } = (e as CustomEvent).detail as { selector: string; styles: StyleMap; classes?: string[] }
+      const {
+        selector: sel,
+        styles,
+        classes,
+      } = (e as CustomEvent).detail as { selector: string; styles: StyleMap; classes?: string[] }
       setCurrentSelector(sel)
       const store = useStyleStore.getState()
       store.setStyles(styles)
@@ -47,14 +51,18 @@ export function App({ selector: initialSelector, initialStyles, initialClasses, 
   useEffect(() => {
     return useStyleStore.subscribe((state, prev) => {
       if (state.styles !== prev.styles) {
-        window.dispatchEvent(new CustomEvent('novastyle:update', {
-          detail: { styles: state.styles },
-        }))
+        window.dispatchEvent(
+          new CustomEvent('novastyle:update', {
+            detail: { styles: state.styles },
+          }),
+        )
       }
       if (state.classNames !== prev.classNames) {
-        window.dispatchEvent(new CustomEvent('novastyle:update-classes', {
-          detail: { classes: state.classNames },
-        }))
+        window.dispatchEvent(
+          new CustomEvent('novastyle:update-classes', {
+            detail: { classes: state.classNames },
+          }),
+        )
       }
     })
   }, [])
@@ -84,9 +92,11 @@ export function App({ selector: initialSelector, initialStyles, initialClasses, 
   }, [])
 
   const onSelectElement = useCallback((sel: string) => {
-    window.dispatchEvent(new CustomEvent('novastyle:select-element', {
-      detail: { selector: sel },
-    }))
+    window.dispatchEvent(
+      new CustomEvent('novastyle:select-element', {
+        detail: { selector: sel },
+      }),
+    )
   }, [])
 
   return (

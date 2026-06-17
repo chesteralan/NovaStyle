@@ -32,7 +32,9 @@ export function BorderEditor({ selector, styles, onUpdate }: BorderEditorProps) 
             onChange={(e) => onUpdate(selector, 'border-style', e.target.value)}
           >
             {BORDER_STYLES.map((s) => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
         </div>

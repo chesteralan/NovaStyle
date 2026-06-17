@@ -20,7 +20,11 @@ export function TableEditor({ selector, styles, onUpdate }: TableEditorProps) {
             onChange={(e) => onUpdate(selector, 'table-layout', e.target.value)}
           >
             <option value="">—</option>
-            {LAYOUT_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+            {LAYOUT_OPTIONS.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
           </select>
         </div>
         <div>
@@ -32,7 +36,11 @@ export function TableEditor({ selector, styles, onUpdate }: TableEditorProps) {
             onChange={(e) => onUpdate(selector, 'border-collapse', e.target.value)}
           >
             <option value="">—</option>
-            {COLLAPSE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+            {COLLAPSE_OPTIONS.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
           </select>
         </div>
       </div>

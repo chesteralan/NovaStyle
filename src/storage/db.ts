@@ -90,7 +90,8 @@ export async function getSettings(): Promise<NovaStyleSettings> {
         gridEditor: saved.visibleEditors?.gridEditor ?? defaultSettings.visibleEditors.gridEditor,
         backgroundEditor: saved.visibleEditors?.backgroundEditor ?? defaultSettings.visibleEditors.backgroundEditor,
         filterEditor: saved.visibleEditors?.filterEditor ?? defaultSettings.visibleEditors.filterEditor,
-        textDecorationEditor: saved.visibleEditors?.textDecorationEditor ?? defaultSettings.visibleEditors.textDecorationEditor,
+        textDecorationEditor:
+          saved.visibleEditors?.textDecorationEditor ?? defaultSettings.visibleEditors.textDecorationEditor,
         outlineEditor: saved.visibleEditors?.outlineEditor ?? defaultSettings.visibleEditors.outlineEditor,
         cursorEditor: saved.visibleEditors?.cursorEditor ?? defaultSettings.visibleEditors.cursorEditor,
         animationEditor: saved.visibleEditors?.animationEditor ?? defaultSettings.visibleEditors.animationEditor,
@@ -218,9 +219,7 @@ export async function getAllDomainsWithMeta(): Promise<DomainMeta[]> {
   }
 }
 
-export async function getVersions(
-  domain: string,
-): Promise<Array<{ styles: StyleMap; timestamp: number }>> {
+export async function getVersions(domain: string): Promise<Array<{ styles: StyleMap; timestamp: number }>> {
   const key = STORAGE_KEY_PREFIX + domain
   try {
     const result = await browser.storage.local.get(key)
@@ -255,7 +254,7 @@ export async function renameDomain(oldDomain: string, newDomain: string): Promis
     const result = await browser.storage.local.get(oldKey)
     const data = (result as Record<string, StoredData | undefined>)[oldKey]
     if (!data) return false
-    const existing = await browser.storage.local.get(newKey) as Record<string, unknown>
+    const existing = (await browser.storage.local.get(newKey)) as Record<string, unknown>
     if (existing[newKey]) return false
     await browser.storage.local.set({ [newKey]: data })
     await browser.storage.local.remove(oldKey)

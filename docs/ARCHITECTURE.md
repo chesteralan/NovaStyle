@@ -55,6 +55,7 @@ NovaStyle is a Chrome Extension (Manifest V3) divided into three runtime environ
 **Lifecycle**: Persistent in Manifest V3 (event-driven, not truly persistent but revived on demand).
 
 **Responsibilities**:
+
 - Listen for `chrome.action.onClicked` to toggle the extension on/off for the active tab
 - Inject the content script via `chrome.scripting.executeScript()` if not already present
 - Relay storage requests from content script to `chrome.storage.local`
@@ -62,24 +63,26 @@ NovaStyle is a Chrome Extension (Manifest V3) divided into three runtime environ
 
 **Message Types Handled**:
 
-| Message | Direction | Payload |
-|---------|-----------|---------|
-| `TOGGLE_EXTENSION` | panel → worker | `{ tabId }` |
-| `GET_STYLES` | content → worker | `{ domain }` → `{ styles }` |
-| `SAVE_STYLES` | content → worker | `{ domain, styles }` |
-| `GET_STATE` | content → worker | `{}` → `{ active }` |
+| Message            | Direction        | Payload                     |
+| ------------------ | ---------------- | --------------------------- |
+| `TOGGLE_EXTENSION` | panel → worker   | `{ tabId }`                 |
+| `GET_STYLES`       | content → worker | `{ domain }` → `{ styles }` |
+| `SAVE_STYLES`      | content → worker | `{ domain, styles }`        |
+| `GET_STATE`        | content → worker | `{}` → `{ active }`         |
 
 ### 2. Content Script (`src/content/content-script.ts`)
 
 **Injection**: Declared in `manifest.json` under `content_scripts` → injected at `document_end` on all URLs.
 
 **Responsibilities**:
+
 - Attach global `mouseover` / `mouseout` / `click` listeners (when active)
 - Coordinate between highlighter, selector engine, stylesheet injector, and UI panel
 - Manage the Shadow DOM container mount point
 - Debounce style updates to maintain 60fps (16ms budget)
 
 **Event Flow (Element Selection)**:
+
 ```
 mouseover → highlighter.draw(el)
 click → e.preventDefault()
@@ -90,6 +93,7 @@ click → e.preventDefault()
 ```
 
 **Event Flow (Style Change)**:
+
 ```
 panel: slider change
     → useStyleStore.getState().updateStyle(selector, property, value)
@@ -110,6 +114,7 @@ interface HighlighterState {
 ```
 
 **Implementation Details**:
+
 - Creates a single `div` appended to `document.body`
 - `position: fixed`, `pointer-events: none`, `z-index: 2147483646`
 - Border: 2px dashed `#3b82f6` (blue-500) with semi-transparent fill
@@ -125,6 +130,7 @@ function computeSelector(el: Element): string
 ```
 
 **Strategy (priority order)**:
+
 1. **ID**: If element has an `id`, use `#id` (fastest, most stable)
 2. **Unique class**: If `el.classList` contains a class unique in the document, use that
 3. **Path with nth-child**: Walk up to a stable ancestor, building `tag:nth-child(n)` path
@@ -132,6 +138,7 @@ function computeSelector(el: Element): string
 5. **Attributes**: Fall back to `[attr="value"]` for distinguishing attributes
 
 **Edge Cases**:
+
 - Dynamic classes (styled-components, CSS modules): Skip hashed classes (regex: `/[a-z]{2,}-\d+[a-zA-Z0-9]*/` or similar patterns)
 - SVG elements: Use tag names and parent paths
 - Text nodes: Walk to parent element
@@ -152,6 +159,7 @@ stylesMap = {
 ```
 
 **Compilation to CSS**:
+
 ```
 div.hero > h1 {
   padding-top: 24px !important;
@@ -161,6 +169,7 @@ div.hero > h1 {
 ```
 
 **Performance**:
+
 - Style updates are batched and debounced at ~50ms
 - Entire stylesheet is regenerated on each change (simple and predictable for < 100 rules)
 - If rule count exceeds 100, consider incremental patch approach in V2
@@ -185,6 +194,7 @@ host page body
 ```
 
 **Shadow DOM Strategy**:
+
 - React app renders into `shadowRoot` via `createRoot(shadowRoot)`
 - Tailwind v4 CSS is pre-compiled at build time and injected into the Shadow DOM `<style>` element
 - No host styles leak in; no panel styles leak out
@@ -220,6 +230,7 @@ function exportToCSS(stylesMap: StyleMap): string
 ```
 
 **Output format**:
+
 ```css
 /* NovaStyle Overrides — novastyle.example.com */
 /* Generated: 2026-06-15T12:00:00.000Z */
@@ -294,11 +305,11 @@ dist/
 
 ## Key Constraints
 
-| Constraint | Decision |
-|---|---|
-| **Style isolation** | Shadow DOM with pre-compiled Tailwind v4 CSS |
-| **Framebudget** | Debounce stylesheet rebuilds (50ms), use rAF for overlays |
-| **Selector stability** | Multi-strategy with `:nth-child` fallback |
-| **No external calls** | All data in `chrome.storage.local` |
-| **No `eval()`** | Manifest V3 CSP prohibits unsafe-eval; pre-compile everything |
-| **Bundle size** | Target < 100KB gzipped for content script |
+| Constraint             | Decision                                                      |
+| ---------------------- | ------------------------------------------------------------- |
+| **Style isolation**    | Shadow DOM with pre-compiled Tailwind v4 CSS                  |
+| **Framebudget**        | Debounce stylesheet rebuilds (50ms), use rAF for overlays     |
+| **Selector stability** | Multi-strategy with `:nth-child` fallback                     |
+| **No external calls**  | All data in `chrome.storage.local`                            |
+| **No `eval()`**        | Manifest V3 CSP prohibits unsafe-eval; pre-compile everything |
+| **Bundle size**        | Target < 100KB gzipped for content script                     |

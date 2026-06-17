@@ -119,5 +119,5 @@ To ensure a smooth user experience that does not clash with host webpage styles,
 
 ## 7. Open Questions & Future Scope
 
-- **Handling Complex CSS Frameworks**: How will the engine generate stable unique CSS selectors on pages that use highly dynamic, hashed utility classes (e.g., dynamic styled-components or CSS Modules like `.css-19v6lw9`)? *Proposed solution for V2:* Fallback options utilizing positional `:nth-child` tags or path indices instead of class name dependencies.
-- **Media Queries & Responsiveness**: Should users be able to change elements specifically for mobile breakpoints? *Proposed solution for V2:* Integrate screen-width toggles within the UI wrapper panel to conditionally wrap generated custom CSS objects within `@media` blocks.
+- **Handling Complex CSS Frameworks**: How will the engine generate stable unique CSS selectors on pages that use highly dynamic, hashed utility classes (e.g., dynamic styled-components or CSS Modules like `.css-19v6lw9`)? _Proposed solution for V2:_ Fallback options utilizing positional `:nth-child` tags or path indices instead of class name dependencies.
+- **Media Queries & Responsiveness**: Should users be able to change elements specifically for mobile breakpoints? _Proposed solution for V2:_ Integrate screen-width toggles within the UI wrapper panel to conditionally wrap generated custom CSS objects within `@media` blocks.

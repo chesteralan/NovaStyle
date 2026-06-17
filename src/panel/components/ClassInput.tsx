@@ -15,25 +15,24 @@ export function ClassInput({ classes, onAdd, onRemove }: ClassInputProps) {
 
   const filtered = useMemo(() => {
     const q = input.trim()
-    return q
-      ? TAILWIND_CLASSES.filter(
-          (c) => c.includes(q) && !classes.includes(c),
-        ).slice(0, 20)
-      : []
+    return q ? TAILWIND_CLASSES.filter((c) => c.includes(q) && !classes.includes(c)).slice(0, 20) : []
   }, [input, classes])
 
   useEffect(() => {
     setFocusedIndex(-1)
   }, [input])
 
-  const commit = useCallback((value: string) => {
-    const trimmed = value.trim()
-    if (trimmed && !classes.includes(trimmed)) {
-      onAdd(trimmed)
-    }
-    setInput('')
-    inputRef.current?.focus()
-  }, [classes, onAdd])
+  const commit = useCallback(
+    (value: string) => {
+      const trimmed = value.trim()
+      if (trimmed && !classes.includes(trimmed)) {
+        onAdd(trimmed)
+      }
+      setInput('')
+      inputRef.current?.focus()
+    },
+    [classes, onAdd],
+  )
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {

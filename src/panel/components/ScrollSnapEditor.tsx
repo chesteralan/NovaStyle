@@ -20,7 +20,9 @@ export function ScrollSnapEditor({ selector, styles, onUpdate }: ScrollSnapEdito
         >
           <option value="">—</option>
           {TYPE_OPTIONS.map((t) => (
-            <option key={t} value={t}>{t}</option>
+            <option key={t} value={t}>
+              {t}
+            </option>
           ))}
         </select>
       </div>
@@ -35,7 +37,11 @@ export function ScrollSnapEditor({ selector, styles, onUpdate }: ScrollSnapEdito
             onChange={(e) => onUpdate(selector, 'scroll-snap-align', e.target.value)}
           >
             <option value="">—</option>
-            {ALIGN_OPTIONS.map((a) => <option key={a} value={a}>{a}</option>)}
+            {ALIGN_OPTIONS.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
           </select>
         </div>
         <div>
@@ -53,9 +59,7 @@ export function ScrollSnapEditor({ selector, styles, onUpdate }: ScrollSnapEdito
         </div>
       </div>
 
-      <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-2 mb-1">
-        Scroll Margin
-      </div>
+      <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-2 mb-1">Scroll Margin</div>
       <div className="grid grid-cols-2 gap-2">
         <div>
           <label className="text-xs text-slate-400 block mb-0.5">Top</label>
@@ -99,9 +103,7 @@ export function ScrollSnapEditor({ selector, styles, onUpdate }: ScrollSnapEdito
         </div>
       </div>
 
-      <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-2 mb-1">
-        Scroll Padding
-      </div>
+      <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-2 mb-1">Scroll Padding</div>
       <div className="grid grid-cols-2 gap-2">
         <div>
           <label className="text-xs text-slate-400 block mb-0.5">Top</label>

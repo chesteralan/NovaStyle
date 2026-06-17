@@ -6,7 +6,16 @@ interface FlexboxEditorProps {
 
 const DIRECTION_OPTIONS = ['row', 'row-reverse', 'column', 'column-reverse']
 const WRAP_OPTIONS = ['nowrap', 'wrap', 'wrap-reverse']
-const ALIGN_OPTIONS = ['flex-start', 'flex-end', 'center', 'space-between', 'space-around', 'space-evenly', 'stretch', 'baseline']
+const ALIGN_OPTIONS = [
+  'flex-start',
+  'flex-end',
+  'center',
+  'space-between',
+  'space-around',
+  'space-evenly',
+  'stretch',
+  'baseline',
+]
 
 export function FlexboxEditor({ selector, styles, onUpdate }: FlexboxEditorProps) {
   const flexEnabled = styles['display'] === 'flex' || styles['display'] === 'inline-flex'
@@ -30,7 +39,9 @@ export function FlexboxEditor({ selector, styles, onUpdate }: FlexboxEditorProps
           >
             <option value="">—</option>
             {DIRECTION_OPTIONS.map((d) => (
-              <option key={d} value={d}>{d}</option>
+              <option key={d} value={d}>
+                {d}
+              </option>
             ))}
           </select>
         </div>
@@ -44,7 +55,9 @@ export function FlexboxEditor({ selector, styles, onUpdate }: FlexboxEditorProps
           >
             <option value="">—</option>
             {WRAP_OPTIONS.map((w) => (
-              <option key={w} value={w}>{w}</option>
+              <option key={w} value={w}>
+                {w}
+              </option>
             ))}
           </select>
         </div>
@@ -60,7 +73,9 @@ export function FlexboxEditor({ selector, styles, onUpdate }: FlexboxEditorProps
         >
           <option value="">—</option>
           {ALIGN_OPTIONS.map((a) => (
-            <option key={a} value={a}>{a}</option>
+            <option key={a} value={a}>
+              {a}
+            </option>
           ))}
         </select>
       </div>
@@ -76,7 +91,9 @@ export function FlexboxEditor({ selector, styles, onUpdate }: FlexboxEditorProps
           >
             <option value="">—</option>
             {ALIGN_OPTIONS.map((a) => (
-              <option key={a} value={a}>{a}</option>
+              <option key={a} value={a}>
+                {a}
+              </option>
             ))}
           </select>
         </div>
@@ -90,7 +107,9 @@ export function FlexboxEditor({ selector, styles, onUpdate }: FlexboxEditorProps
           >
             <option value="">—</option>
             {ALIGN_OPTIONS.map((a) => (
-              <option key={a} value={a}>{a}</option>
+              <option key={a} value={a}>
+                {a}
+              </option>
             ))}
           </select>
         </div>

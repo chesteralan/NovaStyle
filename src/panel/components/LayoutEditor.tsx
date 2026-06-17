@@ -22,7 +22,9 @@ export function LayoutEditor({ selector, styles, onUpdate }: LayoutEditorProps) 
           >
             <option value="">—</option>
             {DISPLAY_OPTIONS.map((d) => (
-              <option key={d} value={d}>{d}</option>
+              <option key={d} value={d}>
+                {d}
+              </option>
             ))}
           </select>
         </div>
@@ -36,7 +38,9 @@ export function LayoutEditor({ selector, styles, onUpdate }: LayoutEditorProps) 
           >
             <option value="">—</option>
             {POSITION_OPTIONS.map((p) => (
-              <option key={p} value={p}>{p}</option>
+              <option key={p} value={p}>
+                {p}
+              </option>
             ))}
           </select>
         </div>
@@ -111,7 +115,9 @@ export function LayoutEditor({ selector, styles, onUpdate }: LayoutEditorProps) 
           >
             <option value="">—</option>
             {OVERFLOW_OPTIONS.map((o) => (
-              <option key={o} value={o}>{o}</option>
+              <option key={o} value={o}>
+                {o}
+              </option>
             ))}
           </select>
         </div>

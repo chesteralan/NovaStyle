@@ -40,7 +40,9 @@ export function Typography({ selector, styles, onUpdate }: TypographyProps) {
           onChange={(e) => onUpdate(selector, 'font-family', e.target.value)}
         >
           {FONTS.map((f) => (
-            <option key={f} value={f}>{f}</option>
+            <option key={f} value={f}>
+              {f}
+            </option>
           ))}
         </select>
       </div>

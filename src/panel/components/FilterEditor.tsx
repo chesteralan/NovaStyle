@@ -34,7 +34,7 @@ function parseFilterValue(prop: string, styles: Record<string, string>): number 
   const slug = prop === 'hue-rotate' ? 'hue-rotate' : prop
   const match = filter.match(new RegExp(`${slug}\\(([^)]+)\\)`))
   if (!match) return 0
-  const raw = match[1].replace(/[^0-9.\-]/g, '')
+  const raw = match[1].replace(/[^0-9.-]/g, '')
   const val = parseFloat(raw)
   return isNaN(val) ? 0 : val
 }
@@ -73,7 +73,8 @@ export function FilterEditor({ selector, styles, onUpdate }: FilterEditorProps) 
             <div className="flex items-center justify-between mb-0.5">
               <label className="text-xs text-slate-400">{s.label}</label>
               <span className="text-xs text-slate-500 font-mono w-12 text-right">
-                {display || `0`}{s.unit}
+                {display || `0`}
+                {s.unit}
               </span>
             </div>
             <input

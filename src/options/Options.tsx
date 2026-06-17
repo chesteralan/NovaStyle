@@ -84,7 +84,9 @@ export function Options() {
       })),
     )
     setSettings(savedSettings)
-    const states = await Promise.all(domains.map((d) => isDomainEnabled(d.domain).then((e) => ({ domain: d.domain, enabled: e }))))
+    const states = await Promise.all(
+      domains.map((d) => isDomainEnabled(d.domain).then((e) => ({ domain: d.domain, enabled: e }))),
+    )
     setDisabled(new Set(states.filter((s) => !s.enabled).map((s) => s.domain)))
     setLoading(false)
   }, [])
@@ -99,15 +101,17 @@ export function Options() {
   }
 
   const toggleExpand = (domain: string) => {
-    setEntries((prev) =>
-      prev.map((e) => (e.domain === domain ? { ...e, expanded: !e.expanded } : e)),
-    )
+    setEntries((prev) => prev.map((e) => (e.domain === domain ? { ...e, expanded: !e.expanded } : e)))
   }
 
   const handleDelete = async (domain: string) => {
     await removeDomainStyles(domain)
     setEntries((prev) => prev.filter((e) => e.domain !== domain))
-    setSelectedDomains((prev) => { const next = new Set(prev); next.delete(domain); return next })
+    setSelectedDomains((prev) => {
+      const next = new Set(prev)
+      next.delete(domain)
+      return next
+    })
     showMessage(`Deleted styles for ${domain}`)
   }
 
@@ -220,11 +224,7 @@ export function Options() {
     }
     const ok = await renameDomain(oldDomain, newDomain)
     if (ok) {
-      setEntries((prev) =>
-        prev.map((e) =>
-          e.domain === oldDomain ? { ...e, domain: newDomain } : e,
-        ),
-      )
+      setEntries((prev) => prev.map((e) => (e.domain === oldDomain ? { ...e, domain: newDomain } : e)))
       setSelectedDomains((prev) => {
         const next = new Set(prev)
         if (next.has(oldDomain)) {
@@ -328,13 +328,9 @@ export function Options() {
     }
   })
 
-  const totalSelectors = entries.reduce(
-    (sum, e) => sum + Object.keys(e.styles).length,
-    0,
-  )
+  const totalSelectors = entries.reduce((sum, e) => sum + Object.keys(e.styles).length, 0)
   const totalProperties = entries.reduce(
-    (sum, e) =>
-      sum + Object.values(e.styles).reduce((s, props) => s + Object.keys(props).length, 0),
+    (sum, e) => sum + Object.values(e.styles).reduce((s, props) => s + Object.keys(props).length, 0),
     0,
   )
 
@@ -356,7 +352,13 @@ export function Options() {
 
         <div className="space-y-3">
           {/* Saved Styles */}
-          <Accordion title="Saved Styles" defaultOpen headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50" titleClass="font-medium text-sm text-slate-800" contentClass="border-t border-slate-100 px-4 py-3">
+          <Accordion
+            title="Saved Styles"
+            defaultOpen
+            headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50"
+            titleClass="font-medium text-sm text-slate-800"
+            contentClass="border-t border-slate-100 px-4 py-3"
+          >
             {loading ? (
               <div className="text-sm text-slate-400">Loading...</div>
             ) : entries.length === 0 ? (
@@ -407,7 +409,9 @@ export function Options() {
                     <option value="edited-asc">Edited ↑</option>
                   </select>
                   <span className="text-xs text-slate-500 shrink-0">
-                    <span className="font-semibold text-slate-700">{sorted.length}</span> / {entries.length} domain(s), <span className="font-semibold text-slate-700">{totalSelectors}</span> selector(s), <span className="font-semibold text-slate-700">{totalProperties}</span> propert(ies)
+                    <span className="font-semibold text-slate-700">{sorted.length}</span> / {entries.length} domain(s),{' '}
+                    <span className="font-semibold text-slate-700">{totalSelectors}</span> selector(s),{' '}
+                    <span className="font-semibold text-slate-700">{totalProperties}</span> propert(ies)
                   </span>
                   {selectedDomains.size > 0 && (
                     <button
@@ -424,111 +428,127 @@ export function Options() {
                     <div className="text-sm text-slate-400 py-4 text-center">No domains match your search.</div>
                   ) : (
                     sorted.map((entry) => {
-                    const selectors = Object.keys(entry.styles)
-                    const propCount = selectors.reduce(
-                      (s, sel) => s + Object.keys(entry.styles[sel]).length,
-                      0,
-                    )
-                    return (
-                      <div key={entry.domain} className="border border-slate-200 rounded-md">
-                        <div className="flex items-center justify-between px-3 py-2">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <input
-                              type="checkbox"
-                              checked={selectedDomains.has(entry.domain)}
-                              onChange={() => toggleSelected(entry.domain)}
-                              className="rounded border-slate-300 shrink-0"
-                              aria-label={`Select ${entry.domain}`}
-                            />
-                            <button
-                              className="text-slate-400 hover:text-slate-600 text-xs shrink-0"
-                              onClick={() => toggleExpand(entry.domain)}
-                              aria-label={entry.expanded ? 'Collapse' : 'Expand'}
-                            >
-                              {entry.expanded ? '▾' : '▸'}
-                            </button>
-                            <button
-                              className={`text-xs shrink-0 ${disabled.has(entry.domain) ? 'text-red-400' : 'text-green-500'}`}
-                              onClick={() => handleToggleDomain(entry.domain)}
-                              aria-label={disabled.has(entry.domain) ? `Enable ${entry.domain}` : `Disable ${entry.domain}`}
-                            >
-                              {disabled.has(entry.domain) ? '⊙' : '●'}
-                            </button>
-                            {renaming === entry.domain ? (
-                              <form
-                                className="flex items-center gap-1 min-w-0"
-                                onSubmit={(e) => { e.preventDefault(); handleRenameSubmit(entry.domain) }}
+                      const selectors = Object.keys(entry.styles)
+                      const propCount = selectors.reduce((s, sel) => s + Object.keys(entry.styles[sel]).length, 0)
+                      return (
+                        <div key={entry.domain} className="border border-slate-200 rounded-md">
+                          <div className="flex items-center justify-between px-3 py-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <input
+                                type="checkbox"
+                                checked={selectedDomains.has(entry.domain)}
+                                onChange={() => toggleSelected(entry.domain)}
+                                className="rounded border-slate-300 shrink-0"
+                                aria-label={`Select ${entry.domain}`}
+                              />
+                              <button
+                                className="text-slate-400 hover:text-slate-600 text-xs shrink-0"
+                                onClick={() => toggleExpand(entry.domain)}
+                                aria-label={entry.expanded ? 'Collapse' : 'Expand'}
                               >
-                                <input
-                                  type="text"
-                                  value={renameValue}
-                                  onChange={(e) => setRenameValue(e.target.value)}
-                                  className="flex-1 min-w-0 px-1.5 py-0.5 text-sm border border-blue-400 rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
-                                  autoFocus
-                                  aria-label="New domain name"
-                                />
-                                <button type="submit" className="text-xs text-blue-600 hover:text-blue-800 shrink-0" aria-label="Save rename">✓</button>
-                                <button type="button" className="text-xs text-slate-400 hover:text-slate-600 shrink-0" onClick={handleRenameCancel} aria-label="Cancel rename">✕</button>
-                              </form>
-                            ) : (
-                              <>
-                                <span className="font-medium text-sm truncate">{entry.domain}</span>
-                                <span className="text-xs text-slate-400 shrink-0">
-                                  {selectors.length}s / {propCount}p
-                                </span>
-                              </>
-                            )}
+                                {entry.expanded ? '▾' : '▸'}
+                              </button>
+                              <button
+                                className={`text-xs shrink-0 ${disabled.has(entry.domain) ? 'text-red-400' : 'text-green-500'}`}
+                                onClick={() => handleToggleDomain(entry.domain)}
+                                aria-label={
+                                  disabled.has(entry.domain) ? `Enable ${entry.domain}` : `Disable ${entry.domain}`
+                                }
+                              >
+                                {disabled.has(entry.domain) ? '⊙' : '●'}
+                              </button>
+                              {renaming === entry.domain ? (
+                                <form
+                                  className="flex items-center gap-1 min-w-0"
+                                  onSubmit={(e) => {
+                                    e.preventDefault()
+                                    handleRenameSubmit(entry.domain)
+                                  }}
+                                >
+                                  <input
+                                    type="text"
+                                    value={renameValue}
+                                    onChange={(e) => setRenameValue(e.target.value)}
+                                    className="flex-1 min-w-0 px-1.5 py-0.5 text-sm border border-blue-400 rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                    autoFocus
+                                    aria-label="New domain name"
+                                  />
+                                  <button
+                                    type="submit"
+                                    className="text-xs text-blue-600 hover:text-blue-800 shrink-0"
+                                    aria-label="Save rename"
+                                  >
+                                    ✓
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="text-xs text-slate-400 hover:text-slate-600 shrink-0"
+                                    onClick={handleRenameCancel}
+                                    aria-label="Cancel rename"
+                                  >
+                                    ✕
+                                  </button>
+                                </form>
+                              ) : (
+                                <>
+                                  <span className="font-medium text-sm truncate">{entry.domain}</span>
+                                  <span className="text-xs text-slate-400 shrink-0">
+                                    {selectors.length}s / {propCount}p
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                className="text-xs text-slate-500 hover:text-slate-700"
+                                onClick={() => handleRenameStart(entry.domain)}
+                                aria-label={`Rename ${entry.domain}`}
+                              >
+                                Rename
+                              </button>
+                              <button
+                                className="text-xs text-slate-500 hover:text-slate-700"
+                                onClick={() => handleShowHistory(entry.domain)}
+                                aria-label={`History for ${entry.domain}`}
+                              >
+                                History
+                              </button>
+                              <button
+                                className="text-xs text-blue-500 hover:text-blue-700"
+                                onClick={() => handleExportDomain(entry.domain, entry.styles)}
+                                aria-label={`Export styles for ${entry.domain}`}
+                              >
+                                Export
+                              </button>
+                              <button
+                                className="text-xs text-red-500 hover:text-red-700"
+                                onClick={() => handleDelete(entry.domain)}
+                                aria-label={`Delete styles for ${entry.domain}`}
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-1 shrink-0">
-                            <button
-                              className="text-xs text-slate-500 hover:text-slate-700"
-                              onClick={() => handleRenameStart(entry.domain)}
-                              aria-label={`Rename ${entry.domain}`}
-                            >
-                              Rename
-                            </button>
-                            <button
-                              className="text-xs text-slate-500 hover:text-slate-700"
-                              onClick={() => handleShowHistory(entry.domain)}
-                              aria-label={`History for ${entry.domain}`}
-                            >
-                              History
-                            </button>
-                            <button
-                              className="text-xs text-blue-500 hover:text-blue-700"
-                              onClick={() => handleExportDomain(entry.domain, entry.styles)}
-                              aria-label={`Export styles for ${entry.domain}`}
-                            >
-                              Export
-                            </button>
-                            <button
-                              className="text-xs text-red-500 hover:text-red-700"
-                              onClick={() => handleDelete(entry.domain)}
-                              aria-label={`Delete styles for ${entry.domain}`}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                        {entry.expanded && (
-                          <div className="border-t border-slate-100 px-3 py-2 space-y-1.5">
-                            {selectors.map((sel) => (
-                              <div key={sel}>
-                                <code className="text-xs text-blue-600 font-mono break-all">{sel}</code>
-                                <div className="ml-2 mt-0.5 space-y-0.5">
-                                  {Object.entries(entry.styles[sel]).map(([prop, val]) => (
-                                    <div key={prop} className="text-xs text-slate-500 font-mono">
-                                      <span className="text-slate-400">{prop}:</span> {val}
-                                    </div>
-                                  ))}
+                          {entry.expanded && (
+                            <div className="border-t border-slate-100 px-3 py-2 space-y-1.5">
+                              {selectors.map((sel) => (
+                                <div key={sel}>
+                                  <code className="text-xs text-blue-600 font-mono break-all">{sel}</code>
+                                  <div className="ml-2 mt-0.5 space-y-0.5">
+                                    {Object.entries(entry.styles[sel]).map(([prop, val]) => (
+                                      <div key={prop} className="text-xs text-slate-500 font-mono">
+                                        <span className="text-slate-400">{prop}:</span> {val}
+                                      </div>
+                                    ))}
+                                  </div>
                                 </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )
-                  }))}
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })
+                  )}
                 </div>
               </div>
             )}
@@ -541,7 +561,10 @@ export function Options() {
                   <span className="font-medium text-sm">History — {showHistoryFor}</span>
                   <button
                     className="text-slate-400 hover:text-slate-600 text-sm"
-                    onClick={() => { setShowHistoryFor(null); setVersions([]) }}
+                    onClick={() => {
+                      setShowHistoryFor(null)
+                      setVersions([])
+                    }}
                     aria-label="Close history"
                   >
                     ✕
@@ -556,12 +579,18 @@ export function Options() {
                       const selCount = Object.keys(v.styles).length
                       const propCount = Object.values(v.styles).reduce((s, p) => s + Object.keys(p).length, 0)
                       return (
-                        <div key={idx} className="flex items-center justify-between border border-slate-200 rounded-md px-3 py-2">
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between border border-slate-200 rounded-md px-3 py-2"
+                        >
                           <div className="min-w-0">
                             <div className="text-xs text-slate-500">
-                              <span className="font-medium text-slate-700">v{idx + 1}</span> — {new Date(v.timestamp).toLocaleString()}
+                              <span className="font-medium text-slate-700">v{idx + 1}</span> —{' '}
+                              {new Date(v.timestamp).toLocaleString()}
                             </div>
-                            <div className="text-xs text-slate-400">{selCount} selector(s), {propCount} propert(ies)</div>
+                            <div className="text-xs text-slate-400">
+                              {selCount} selector(s), {propCount} propert(ies)
+                            </div>
                           </div>
                           <button
                             className="text-xs text-blue-600 hover:text-blue-800 shrink-0 ml-2"
@@ -580,14 +609,21 @@ export function Options() {
           )}
 
           {/* Panel Settings */}
-          <Accordion title="Panel Settings" headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50" titleClass="font-medium text-sm text-slate-800" contentClass="border-t border-slate-100 px-4 py-3">
+          <Accordion
+            title="Panel Settings"
+            headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50"
+            titleClass="font-medium text-sm text-slate-800"
+            contentClass="border-t border-slate-100 px-4 py-3"
+          >
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-slate-700 mb-1.5">Default Position</label>
                 <select
                   className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-md bg-white"
                   value={settings.defaultPosition}
-                  onChange={(e) => updateSetting('defaultPosition', e.target.value as NovaStyleSettings['defaultPosition'])}
+                  onChange={(e) =>
+                    updateSetting('defaultPosition', e.target.value as NovaStyleSettings['defaultPosition'])
+                  }
                 >
                   <option value="right">Right</option>
                   <option value="left">Left</option>
@@ -615,9 +651,14 @@ export function Options() {
           </Accordion>
 
           {/* Editor Settings */}
-          <Accordion title="Editor Settings" headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50" titleClass="font-medium text-sm text-slate-800" contentClass="border-t border-slate-100 px-4 py-3">
+          <Accordion
+            title="Editor Settings"
+            headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50"
+            titleClass="font-medium text-sm text-slate-800"
+            contentClass="border-t border-slate-100 px-4 py-3"
+          >
             <div className="space-y-3">
-              {([
+              {[
                 { key: 'classInput' as const, label: 'Class Name Editor' },
                 { key: 'boxModel' as const, label: 'Box Model (margin, padding, border)' },
                 { key: 'typography' as const, label: 'Typography (font, size, spacing)' },
@@ -645,7 +686,7 @@ export function Options() {
                 { key: 'classResolver' as const, label: 'Class Resolver' },
                 { key: 'responsivePreview' as const, label: 'Responsive Preview' },
                 { key: 'customCSS' as const, label: 'Custom CSS' },
-              ]).map(({ key, label }) => (
+              ].map(({ key, label }) => (
                 <label key={key} className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -660,7 +701,12 @@ export function Options() {
           </Accordion>
 
           {/* Theme */}
-          <Accordion title="Theme" headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50" titleClass="font-medium text-sm text-slate-800" contentClass="border-t border-slate-100 px-4 py-3">
+          <Accordion
+            title="Theme"
+            headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50"
+            titleClass="font-medium text-sm text-slate-800"
+            contentClass="border-t border-slate-100 px-4 py-3"
+          >
             <div className="space-y-3">
               <div className="flex items-center gap-4">
                 {(['light', 'dark'] as const).map((t) => (
@@ -683,7 +729,10 @@ export function Options() {
                 <div className="flex flex-wrap gap-2">
                   {[
                     { name: 'Sepia', css: 'html { filter: sepia(0.5); }' },
-                    { name: 'Dark Reader', css: 'html { filter: invert(0.9) hue-rotate(180deg); } img, video { filter: invert(1) hue-rotate(180deg); }' },
+                    {
+                      name: 'Dark Reader',
+                      css: 'html { filter: invert(0.9) hue-rotate(180deg); } img, video { filter: invert(1) hue-rotate(180deg); }',
+                    },
                     { name: 'High Contrast', css: 'html { filter: contrast(1.5); }' },
                     { name: 'Night Shift', css: 'html { filter: sepia(0.3) brightness(0.8); }' },
                   ].map((preset) => (
@@ -705,17 +754,45 @@ export function Options() {
           </Accordion>
 
           {/* Shortcuts */}
-          <Accordion title="Shortcuts" headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50" titleClass="font-medium text-sm text-slate-800" contentClass="border-t border-slate-100 px-4 py-3">
+          <Accordion
+            title="Shortcuts"
+            headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50"
+            titleClass="font-medium text-sm text-slate-800"
+            contentClass="border-t border-slate-100 px-4 py-3"
+          >
             <div className="space-y-2 text-xs text-slate-600">
-              <div className="flex justify-between"><kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">Esc</kbd><span>Close panel</span></div>
-              <div className="flex justify-between"><kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">⌘Z / Ctrl+Z</kbd><span>Undo</span></div>
-              <div className="flex justify-between"><kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">⌘⇧Z / Ctrl+Shift+Z</kbd><span>Redo</span></div>
-              <div className="flex justify-between"><kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">⌘Y / Ctrl+Y</kbd><span>Redo (alternate)</span></div>
+              <div className="flex justify-between">
+                <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">Esc</kbd>
+                <span>Close panel</span>
+              </div>
+              <div className="flex justify-between">
+                <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">
+                  ⌘Z / Ctrl+Z
+                </kbd>
+                <span>Undo</span>
+              </div>
+              <div className="flex justify-between">
+                <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">
+                  ⌘⇧Z / Ctrl+Shift+Z
+                </kbd>
+                <span>Redo</span>
+              </div>
+              <div className="flex justify-between">
+                <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono">
+                  ⌘Y / Ctrl+Y
+                </kbd>
+                <span>Redo (alternate)</span>
+              </div>
             </div>
           </Accordion>
 
           {/* Export / Import */}
-          <Accordion title="Export / Import" headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50" titleClass="font-medium text-sm text-slate-800" contentClass="border-t border-slate-100 px-4 py-3">
+          <Accordion
+            title="Export / Import"
+            headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50"
+            titleClass="font-medium text-sm text-slate-800"
+            contentClass="border-t border-slate-100 px-4 py-3"
+          >
             <div className="flex items-center gap-3">
               <button
                 className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
@@ -732,18 +809,17 @@ export function Options() {
               >
                 Import
               </button>
-              <input
-                ref={fileRef}
-                type="file"
-                accept=".json"
-                className="hidden"
-                onChange={handleImport}
-              />
+              <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
             </div>
           </Accordion>
 
           {/* Advanced */}
-          <Accordion title="Advanced" headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50" titleClass="font-medium text-sm text-slate-800" contentClass="border-t border-slate-100 px-4 py-3">
+          <Accordion
+            title="Advanced"
+            headerClass="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50"
+            titleClass="font-medium text-sm text-slate-800"
+            contentClass="border-t border-slate-100 px-4 py-3"
+          >
             <div className="space-y-3">
               <div>
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -766,7 +842,10 @@ export function Options() {
                   className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-md bg-white"
                   value={(settings.ignoredDomains ?? []).join(', ')}
                   onChange={(e) => {
-                    const list = e.target.value.split(',').map((s) => s.trim()).filter(Boolean)
+                    const list = e.target.value
+                      .split(',')
+                      .map((s) => s.trim())
+                      .filter(Boolean)
                     updateSetting('ignoredDomains', list)
                   }}
                   placeholder="example.com, test.org"
