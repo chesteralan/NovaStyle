@@ -17,7 +17,7 @@ export function computeSelector(el: Element): string {
 
   for (const attr of DATA_ATTRS) {
     const val = el.getAttribute(attr)
-    if (val) return `[${attr}="${val}"]`
+    if (val) return `[${attr}="${CSS.escape(val)}"]`
   }
 
   return buildNthPath(el)
