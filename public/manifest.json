@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "NovaStyle",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Visually edit any webpage's CSS — spacing, typography, colors, and layout.",
   "browser_specific_settings": {
     "gecko": {
