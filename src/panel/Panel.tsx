@@ -68,7 +68,9 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
   const [position, setPosition] = useState<PanelPosition>(defaultPosition ?? 'right')
   const [floating, setFloating] = useState(false)
   const [floatPos, setFloatPos] = useState({ top: 60, left: 0 })
+  const [floatHeight, setFloatHeight] = useState<number | null>(null)
   const dragRef = useRef<{ startX: number; startY: number; startTop: number; startLeft: number } | null>(null)
+  const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null)
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -147,6 +149,29 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
     document.addEventListener('mouseup', onUp)
   }, [floating, floatPos])
 
+  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+    if (!floating) return
+    e.stopPropagation()
+    e.preventDefault()
+    resizeRef.current = {
+      startY: e.clientY,
+      startHeight: floatHeight ?? Math.round(window.innerHeight * 0.5),
+    }
+    const onMove = (ev: MouseEvent) => {
+      if (!resizeRef.current) return
+      const dh = ev.clientY - resizeRef.current.startY
+      const newHeight = Math.max(200, Math.min(window.innerHeight * 0.9, resizeRef.current.startHeight + dh))
+      setFloatHeight(newHeight)
+    }
+    const onUp = () => {
+      resizeRef.current = null
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+    }
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+  }, [floating, floatHeight])
+
   let containerStyle: React.CSSProperties = { zIndex: 2147483646 }
   if (floating) {
     containerStyle = {
@@ -155,6 +180,8 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
       top: floatPos.top,
       left: floatPos.left,
       width: '20rem',
+      maxHeight: '50vh',
+      height: floatHeight ?? '50vh',
     }
   }
 
@@ -341,6 +368,21 @@ export function Panel({ selector, styles, classNames, onUpdate, onClose, onUndo,
         </Accordion>
         </ErrorBoundary>
       </div>
+      {floating && (
+        <div
+          className="shrink-0 h-4 cursor-s-resize flex items-center justify-center border-t border-slate-200 text-slate-400 hover:text-slate-600 select-none"
+          onMouseDown={handleResizeStart}
+          aria-label="Resize panel"
+        >
+          <svg width="20" height="6" viewBox="0 0 20 6" className="opacity-50">
+            <rect x="0" y="0" width="4" height="4" rx="1" fill="currentColor" />
+            <rect x="8" y="0" width="4" height="4" rx="1" fill="currentColor" />
+            <rect x="16" y="0" width="4" height="4" rx="1" fill="currentColor" />
+            <rect x="4" y="2" width="4" height="4" rx="1" fill="currentColor" />
+            <rect x="12" y="2" width="4" height="4" rx="1" fill="currentColor" />
+          </svg>
+        </div>
+      )}
     </div>
   )
 }
